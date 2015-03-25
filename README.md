@@ -15,11 +15,8 @@ Thanks you all for your interest!
  
 <b>Dependencies</b>
 <ul>
-<li>Apache Derby      </li>
-<li>JDom              </li>
-<li>MacWidgets        </li>
-<li>MRJAdapter        </li>
-<li>RSyntaxTextArea   </li>
+<li><a href="https://code.google.com/p/macwidgets/">MacWidgets</a> (or <a href="https://github.com/krichter722/macwidgets/">https://github.com/krichter722/macwidgets/</a>)        </li>
+<li><a href="https://java.net/projects/mrjadapter/sources">MRJAdapter</a>        </li>
 <li>SwingLayout       </li>
 <li>JDK 1.5 or greater</li>
 </ul>
