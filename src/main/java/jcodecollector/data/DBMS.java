@@ -419,13 +419,14 @@ public class DBMS {
 
             return true;
         } catch (SQLException ex) {
-            ex.printStackTrace();
+            logger.warn("error during SQL database commit", ex);
             return false;
         } finally {
             try {
                 // ripristino il commit automatico.
                 connection.setAutoCommit(true);
             } catch (Exception ex) {
+                logger.warn("error during setting auto commit of SQL database to true", ex);
                 return false;
             }
         }
@@ -458,7 +459,7 @@ public class DBMS {
             try {
                 preparedStatement.close();
             } catch (SQLException ex) {
-                ex.printStackTrace();
+                logger.warn("error during closing SQL statement", ex);
             }
         }
     }
@@ -528,7 +529,7 @@ public class DBMS {
             try {
                 statement.close();
             } catch (SQLException ex) {
-                ex.printStackTrace();
+                logger.warn("error during closing SQL statement", ex);
             }
         }
     }
@@ -643,13 +644,13 @@ public class DBMS {
             connection.commit();
             success = true;
         } catch (SQLException ex) {
-            ex.printStackTrace();
+            logger.warn("error during committing SQL connection", ex);
             success = false;
         } finally {
             try {
                 connection.setAutoCommit(true);
             } catch (SQLException ex) {
-                ex.printStackTrace();
+                logger.warn("error during setting auto commit of SQL connection to true", ex);
             }
         }
 
@@ -668,7 +669,7 @@ public class DBMS {
             statement.execute();
             success = true;
         } catch (SQLException ex) {
-            ex.printStackTrace();
+            logger.warn("error during execution of SQL statement", ex);
             success = false;
         }
 
@@ -698,7 +699,7 @@ public class DBMS {
             try {
                 connection.setAutoCommit(true);
             } catch (SQLException ex) {
-                ex.printStackTrace();
+                logger.warn("error during setting auto commit of SQL connection to true", ex);
             }
         }
 
@@ -714,7 +715,7 @@ public class DBMS {
             statement.setString(1, name);
             statement.execute();
         } catch (SQLException ex) {
-            ex.printStackTrace();
+            logger.warn("error during execution of SQL statement", ex);
             return false;
         }
 
@@ -851,7 +852,7 @@ public class DBMS {
             preparedStatement.setString(2, name);
             preparedStatement.execute();
         } catch (SQLException ex) {
-            ex.printStackTrace();
+            logger.warn("error during execution of SQL statement", ex);
             return false;
         }
 
@@ -879,8 +880,8 @@ public class DBMS {
             }
             statement.executeUpdate();
             return true;
-        } catch (SQLException e) {
-            e.printStackTrace();
+        } catch (SQLException ex) {
+            logger.warn("error during execution of SQL statement", ex);
             return false;
         }
     }
@@ -895,8 +896,8 @@ public class DBMS {
             CallableStatement statement = connection.prepareCall(backup_query);
             statement.setString(1, where);
             statement.execute();
-        } catch (SQLException e) {
-            e.printStackTrace();
+        } catch (SQLException ex) {
+            logger.warn("error during execution of SQL statement", ex);
             return false;
         }
         return true;
@@ -1020,7 +1021,7 @@ public class DBMS {
                 }
             }
         } catch (SQLException ex) {
-            ex.printStackTrace();
+            logger.warn("error during execution of SQL statement", ex);
             data = null;
         }
 
