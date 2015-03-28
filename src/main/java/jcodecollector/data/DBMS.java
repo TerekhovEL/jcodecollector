@@ -225,7 +225,7 @@ public class DBMS {
      */
     public ArrayList<String> getCategories() {
         PreparedStatement statement = null;
-        ResultSet resultSet = null;
+        ResultSet resultSet;
         String query = "select distinct snippet_category from snippets";
         ArrayList<String> array = null;
 
@@ -265,8 +265,8 @@ public class DBMS {
      * @return la categoria a cui appartiene lo snippet indicato
      */
     public String getCategoryOf(String snippet) {
-        PreparedStatement statement = null;
-        ResultSet resultSet = null;
+        PreparedStatement statement;
+        ResultSet resultSet;
         String category = null;
 
         try {
@@ -291,8 +291,8 @@ public class DBMS {
      *         con successo, <code>false</code> altrimenti
      */
     public boolean insertNewSnippet(Snippet newSnippet) {
-        PreparedStatement statement = null;
-        ResultSet resultSet = null;
+        PreparedStatement statement;
+        ResultSet resultSet;
 
         String query_insert = "insert into snippets values(DEFAULT, ?, ?, ?, ?, ?, ?)";
         String query_selectID = "select id_snippet from snippets where snippet_name = ?";
@@ -542,14 +542,14 @@ public class DBMS {
      *         appartengono alla categoria indicata
      */
     public ArrayList<Snippet> getSnippets(String category) {
-        PreparedStatement statement = null;
-        ResultSet snippets = null;
-        ResultSet tags = null;
+        PreparedStatement statement;
+        ResultSet snippets;
+        ResultSet tags;
         String select_snippets_query = "select id_snippet, snippet_category, snippet_name, "
                 + "snippet_code, snippet_comment, snippet_is_locked, syntax_name "
                 + "from snippets where snippet_category = ?";
         String select_tags_query = "select tag_name from tags where id_snippet = ?";
-        ArrayList<Snippet> array = null;
+        ArrayList<Snippet> array;
 
         try {
             statement = connection.prepareStatement(select_snippets_query);
@@ -583,7 +583,7 @@ public class DBMS {
     }
 
     private Snippet makeSnippetBean(ResultSet snippet, ResultSet tags) {
-        Snippet newSnippet = null;
+        Snippet newSnippet;
 
         try {
             ArrayList<String> array = new ArrayList<String>();
@@ -610,7 +610,7 @@ public class DBMS {
      */
     public boolean removeSnippet(String name) {
         String query = "delete from snippets where snippet_name = ?";
-        PreparedStatement statement = null;
+        PreparedStatement statement;
         boolean success;
 
         try {
@@ -865,7 +865,7 @@ public class DBMS {
     }
 
     public boolean setSyntaxToSnippets(String syntax, ArrayList<String> snippets) {
-        PreparedStatement statement = null;
+        PreparedStatement statement;
         StringBuilder query = new StringBuilder("update snippets set syntax_name = ? where snippet_name = ?");
         for (int i = 0; i < snippets.size() - 1; i++) {
             query.append(" or snippet_name = ?");
