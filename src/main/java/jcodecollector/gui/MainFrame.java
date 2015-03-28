@@ -96,6 +96,8 @@ import com.explodingpixels.macwidgets.SourceListItem;
 import com.explodingpixels.macwidgets.SourceListModelListener;
 import com.explodingpixels.macwidgets.SourceListSelectionListener;
 import com.explodingpixels.macwidgets.UnifiedToolBar;
+import java.awt.Window;
+import jcodecollector.Loader;
 
 /**
  * La finestra principale dell'applicazione.
@@ -153,7 +155,7 @@ public class MainFrame extends JFrame implements CountListener, SnippetListener,
             addWindowListener(new WindowAdapter() {
                 public void windowClosing(WindowEvent e) {
                     prepareAndSaveSettings();
-                    System.exit(0);
+                    ((Window)e.getSource()).dispose();
                 }
             });
         }
@@ -761,7 +763,7 @@ public class MainFrame extends JFrame implements CountListener, SnippetListener,
             state.startSearch();
 
             // risultato della ricerca
-            TreeMap<String, TreeSet<String>> data = DBMS.getInstance().search(keywords, controller.getValue());
+            TreeMap<String, TreeSet<String>> data = Loader.DBMS_INSTANCE.search(keywords, controller.getValue());
             controller.setData(data);
 
             // la ricerca non ha dato risultati: emetto un effetto
@@ -881,8 +883,8 @@ public class MainFrame extends JFrame implements CountListener, SnippetListener,
             // faccio una copia del database nella nuova posizione: se va tutto
             // ok reimposto la connessione verso il nuovo database, cancello
             // quello vecchio
-            if (DBMS.getInstance().copyDatabase(newLocation.getAbsolutePath())) {
-                if (DBMS.getInstance().resetConnection()) {
+            if (Loader.DBMS_INSTANCE.copyDatabase(newLocation.getAbsolutePath())) {
+                if (Loader.DBMS_INSTANCE.resetConnection()) {
                     if (!FileManager.deleteDirectory(oldLocation)) {
                         JOptionPane.showMessageDialog(MainFrame.this, "<html><b>An error occured while moving the database</b>.<br><br>"
                                 + "All your data has been copied successfully in the new location but the old database folder cannot be removed.<br>" + "You should manually remove the folder <b>" + oldLocation.getAbsolutePath() + "</b>.</html>", "",
@@ -1294,7 +1296,7 @@ public class MainFrame extends JFrame implements CountListener, SnippetListener,
         }
 
         for (Snippet s : snippets) {
-            DBMS.getInstance().insertNewSnippet(s);
+            Loader.DBMS_INSTANCE.insertNewSnippet(s);
         }
 
         // se va tutto bene ricarico il SourceList
@@ -1696,7 +1698,8 @@ public class MainFrame extends JFrame implements CountListener, SnippetListener,
             quitApplication.addActionListener(new ActionListener() {
                 public void actionPerformed(ActionEvent e) {
                     prepareAndSaveSettings();
-                    System.exit(0);
+                    MainFrame.this.setVisible(false);
+                    MainFrame.this.dispose();
                 }
             });
 
@@ -1750,7 +1753,7 @@ public class MainFrame extends JFrame implements CountListener, SnippetListener,
         autoHideCommentPanelMenuItem.setSelected(ApplicationSettings.getInstance().isAutoHideCommentEnabled());
         autoHideCommentPanelMenuItem.addActionListener(new ActionListener() {
             public void actionPerformed(ActionEvent e) {
-                checkAutoHideCommentPanel(DBMS.getInstance().getSnippet(state.getNameOfSelectedSnippet()), true);
+                checkAutoHideCommentPanel(Loader.DBMS_INSTANCE.getSnippet(state.getNameOfSelectedSnippet()), true);
             }
         });
 
@@ -1959,7 +1962,7 @@ public class MainFrame extends JFrame implements CountListener, SnippetListener,
 
         exportSnippetsInCategorySubMenu.removeAll();
 
-        ArrayList<String> categories = DBMS.getInstance().getCategories();
+        ArrayList<String> categories = Loader.DBMS_INSTANCE.getCategories();
         for (int i = 0; i < categories.size(); i++) {
             JMenuItem categoryMenuItem = new JMenuItem(categories.get(i));
             categoryMenuItem.addActionListener(EXPORT_CATEGORY_ACTION);

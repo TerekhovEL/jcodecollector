@@ -21,6 +21,7 @@ import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;
+import jcodecollector.Loader;
 
 import jcodecollector.common.bean.Snippet;
 import jcodecollector.data.DBMS;
@@ -40,7 +41,7 @@ import org.jdom.output.XMLOutputter;
 public class XMLManagerOldVersion {
 
     public static boolean createPackage(File file, String name) {
-        ArrayList<Snippet> array = DBMS.getInstance().getSnippets(name);
+        ArrayList<Snippet> array = Loader.DBMS_INSTANCE.getSnippets(name);
         Element root_xml = new Element("jcc-snippets-package");
         boolean success;
 
@@ -143,12 +144,12 @@ public class XMLManagerOldVersion {
         ArrayList<Snippet> snippets = getSnippetsFromFile(root);
 
         // for (Syntax s : syntaxes) {
-        // DBMS.getInstance().insertNewSyntax(s);
+        // Loader.DBMS_INSTANCE.insertNewSyntax(s);
         // }
 
         // inserisco gli snippet
         for (Snippet s : snippets) {
-            DBMS.getInstance().insertNewSnippet(s);
+            Loader.DBMS_INSTANCE.insertNewSnippet(s);
         }
     }
 

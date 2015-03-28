@@ -27,6 +27,7 @@ import com.apple.eawt.AppReOpenedListener;
 import com.apple.eawt.Application;
 import com.apple.eawt.QuitHandler;
 import com.apple.eawt.QuitResponse;
+import java.awt.Window;
 
 /**
  * Migliora l'integrazione dell'applicazione con Mac OS X usando le
@@ -63,7 +64,7 @@ public class MacUtilities {
         application.setQuitHandler(new QuitHandler() {
             public void handleQuitRequestWith(QuitEvent e, QuitResponse r) {
                 mainFrame.prepareAndSaveSettings();
-                System.exit(0);
+                ((Window)e.getSource()).dispose();
             }
         });
 

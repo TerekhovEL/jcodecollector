@@ -20,6 +20,7 @@ import java.io.FileOutputStream;
 import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;
+import jcodecollector.Loader;
 
 import jcodecollector.data.DBMS;
 import jcodecollector.common.bean.Snippet;
@@ -46,9 +47,9 @@ public class PackageManager {
         ArrayList<Snippet> array = null;
 
         if (category == null) {
-            array = DBMS.getInstance().getAllSnippets();
+            array = Loader.DBMS_INSTANCE.getAllSnippets();
         } else {
-            array = DBMS.getInstance().getSnippets(category);
+            array = Loader.DBMS_INSTANCE.getSnippets(category);
         }
 
         Element root = new Element("jcc-snippets-package");

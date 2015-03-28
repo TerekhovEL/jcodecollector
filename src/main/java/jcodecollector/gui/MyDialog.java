@@ -51,6 +51,7 @@ import javax.swing.ScrollPaneConstants;
 import javax.swing.border.CompoundBorder;
 import javax.swing.border.EmptyBorder;
 import javax.swing.text.JTextComponent;
+import jcodecollector.Loader;
 
 import jcodecollector.State;
 import jcodecollector.common.bean.Snippet;
@@ -623,7 +624,7 @@ public class MyDialog extends JDialog implements SnippetListener, CategoryListen
 
     /** @see jcodecollector.listener.CategoryListener#categoriesUpdated(String) */
     public void categoriesUpdated(String selected) {
-        ArrayList<String> array = DBMS.getInstance().getCategories();
+        ArrayList<String> array = Loader.DBMS_INSTANCE.getCategories();
         Collections.sort(array);
 
         categories.removeAllItems();
@@ -659,7 +660,7 @@ public class MyDialog extends JDialog implements SnippetListener, CategoryListen
             tags[i] = tokenizer.nextToken().trim();
         }
 
-        int id = DBMS.getInstance().getSnippetId(name);
+        int id = Loader.DBMS_INSTANCE.getSnippetId(name);
         return new Snippet(id, category, name, tags, code, comment, syntax, locked);
     }
 
@@ -699,7 +700,7 @@ public class MyDialog extends JDialog implements SnippetListener, CategoryListen
         // lock/unlock the snippet
         lock(lockButton.isSelected());
 
-        if (DBMS.getInstance().lockSnippet(nameTextField.getText().trim(), lockButton.isSelected())) {
+        if (Loader.DBMS_INSTANCE.lockSnippet(nameTextField.getText().trim(), lockButton.isSelected())) {
             // TODO cosa si fa qui? boh
         }
     }

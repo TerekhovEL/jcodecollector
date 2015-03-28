@@ -19,6 +19,7 @@ import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.TreeMap;
 import java.util.TreeSet;
+import jcodecollector.Loader;
 
 import jcodecollector.common.bean.Snippet;
 
@@ -63,7 +64,7 @@ public class SearchResults {
         }
 
         ArrayList<String> array = getSnippets(category);
-        boolean success = DBMS.getInstance().removeSnippets(array);
+        boolean success = Loader.DBMS_INSTANCE.removeSnippets(array);
 
         if (success) {
             data.remove(category);
@@ -95,7 +96,7 @@ public class SearchResults {
         }
 
         // fatto questo posso chiedere al dbms di effettuare l'aggiornamento
-        return DBMS.getInstance().renameCategoryOf(
+        return Loader.DBMS_INSTANCE.renameCategoryOf(
                 new ArrayList<String>(data.get(newName)), newName);
     }
 
@@ -106,7 +107,7 @@ public class SearchResults {
             TreeSet<String> value = data.get(key);
             if (value.contains(name)) {
                 value.remove(name);
-                return DBMS.getInstance().removeSnippet(name);
+                return Loader.DBMS_INSTANCE.removeSnippet(name);
             }
         }
 
@@ -124,7 +125,7 @@ public class SearchResults {
             data.put(newSnippet.getCategory(), value);
         }
 
-        return DBMS.getInstance().updateSnippet(oldSnippet, newSnippet);
+        return Loader.DBMS_INSTANCE.updateSnippet(oldSnippet, newSnippet);
     }
 
     public void setData(TreeMap<String, TreeSet<String>> data) {
@@ -161,6 +162,6 @@ public class SearchResults {
         ArrayList<String> snippets = new ArrayList<String>(data.get(category));
         snippets.remove(selected);
         
-        return DBMS.getInstance().setSyntaxToSnippets(newSyntax, snippets);
+        return Loader.DBMS_INSTANCE.setSyntaxToSnippets(newSyntax, snippets);
     }
 }

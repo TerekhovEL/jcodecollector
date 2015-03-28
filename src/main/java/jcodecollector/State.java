@@ -232,8 +232,8 @@ public class State implements SnippetListener, CategoryListener, CountListener, 
 			categories = Controller.getInstance().countCategories();
 			snippets = Controller.getInstance().countSnippets();
 		} else {
-			categories = DBMS.getInstance().countCategories();
-			snippets = DBMS.getInstance().countSnippets();
+			categories = Loader.DBMS_INSTANCE.countCategories();
+			snippets = Loader.DBMS_INSTANCE.countSnippets();
 		}
 
 		countUpdate(categories, snippets);
@@ -400,7 +400,7 @@ public class State implements SnippetListener, CategoryListener, CountListener, 
 	}
 
 	public boolean isDatabaseEmpty() {
-		return DBMS.getInstance().countCategories() == 0;
+		return Loader.DBMS_INSTANCE.countCategories() == 0;
 	}
 
 }

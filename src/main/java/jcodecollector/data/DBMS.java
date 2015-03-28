@@ -16,6 +16,8 @@ package jcodecollector.data;
  * limitations under the License.
  */
 
+import jcodecollector.exceptions.ConnectionException;
+import jcodecollector.exceptions.DirectoryCreationException;
 import java.io.File;
 import java.sql.CallableStatement;
 import java.sql.Connection;
@@ -44,36 +46,24 @@ public class DBMS {
     private static final String DBMS_DRIVER = "org.apache.derby.jdbc.EmbeddedDriver";
     private static final Logger logger = LoggerFactory.getLogger(DBMS.class);
 
-    private void init() {
+    private void init() throws ClassNotFoundException {
         String connectionURL = "jdbc:derby:";
         String databasePath = ApplicationSettings.getInstance().getDatabasePath() + "jCodeCollector";
         connectionURL += databasePath;
         connectionURL += File.separator + ApplicationSettings.DB_DIR_NAME;
 
-        try {
-            Class.forName(DBMS_DRIVER);
-        } catch (ClassNotFoundException ex) {
-            String text = "<html><b>An error occurred while loading dbms driver.</b><br><br><font size=-1>";
-            text += "Click OK and try again.";
-            text += "</font></html>";
-            JOptionPane.showMessageDialog(null, text, "", JOptionPane.ERROR_MESSAGE);
-            System.exit(1);
-        }
+        Class.forName(DBMS_DRIVER);
 
         /* Se le cartelle che portano alla cartella del database non esistono le
          * creo: prima di creare il database㼠? importante le cartelle siano
          * pronte in quanto derby non le crea in automatico */
-        File database = new File(databasePath);
-        if (!database.exists()) {
-            if (!database.mkdirs()) {
+        File databaseDirectory = new File(databasePath);
+        if (!databaseDirectory.exists()) {
+            if (!databaseDirectory.mkdirs()) {
                 /* se non riesco a creare le cartelle do un messaggio all'utente
                  * ed esco: non dovrebbe mai fallire, a meno che non ci sia un
                  * problema di permessi */
-                String text = "<html><b>An error occurred while preparing database folder.</b><br><br><font size=-1>";
-                text += "Click OK and try again.";
-                text += "</font></html>";
-                JOptionPane.showMessageDialog(null, text, "", JOptionPane.ERROR_MESSAGE);
-                System.exit(2);
+                throw new DirectoryCreationException(databaseDirectory);
             }
         }
 
@@ -84,20 +74,7 @@ public class DBMS {
             // effetto la connessione al database
             connection = DriverManager.getConnection(connectionURL);
         } catch (SQLException ex) {
-            String message = "Cannot start jCodeCollector because an error occurred.";
-            String text = String.format("<html><b>%s (%s)</b><br><br><font size=-1>", message, ex.getMessage());
-            logger.debug(message, ex);
-            if (message.contains("not found")) {
-                text += "JCODECOLLECTOR_DB folder cannot be found in <i>"
-                        + ApplicationSettings.getInstance().getDatabasePath()
-                        + "jCodeCollector</i>";
-            } else {
-                text += "Only one client at time can access to the database.";
-            }
-            text += "</font></html>";
-
-            JOptionPane.showMessageDialog(null, text, "", JOptionPane.ERROR_MESSAGE);
-            System.exit(3);
+            throw new ConnectionException(ex);
         }
 
         /* Creo le tabelle SNIPPETS e TAGS e inserisco gli snippet di esempio.
@@ -140,6 +117,7 @@ public class DBMS {
         if (!databaseDirectory.exists()) {
             if (!databaseDirectory.mkdirs()) {
                 logger.error(String.format("error creating dirs %s", databaseDirectory));
+                throw new DirectoryCreationException(databaseDirectory);
             }
         }
 
@@ -1069,7 +1047,7 @@ public class DBMS {
     }
 
     /** The instance of the dbms manager. */
-    private static DBMS dbms = new DBMS();
+    private static DBMS dbms = null;
 
     /** The connection used by the application. */
     private Connection connection = null;
@@ -1077,7 +1055,7 @@ public class DBMS {
     /**
      * Initializes the dbms manager.
      */
-    private DBMS() {
+    private DBMS() throws ClassNotFoundException {
         init();
     }
 
@@ -1086,7 +1064,10 @@ public class DBMS {
      * 
      * @return the istance of the dbms manager
      */
-    public static DBMS getInstance() {
+    public static DBMS getInstance() throws ClassNotFoundException {
+        if(dbms == null) {
+            dbms = new DBMS();
+        }
         return dbms;
     }
 
