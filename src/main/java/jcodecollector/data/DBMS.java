@@ -657,7 +657,7 @@ public class DBMS {
 
     public boolean renameCategory(String oldName, String newName) {
         String query = "update snippets set snippet_category = ? where snippet_category = ?";
-        PreparedStatement statement = null;
+        PreparedStatement statement;
         boolean success;
 
         try {
@@ -676,7 +676,7 @@ public class DBMS {
 
     public boolean renameCategoryOf(ArrayList<String> snippets, String category) {
         String query = "update snippets set snippet_category = ? where snippet_name = ?";
-        PreparedStatement statement = null;
+        PreparedStatement statement;
         boolean success;
 
         try {
@@ -706,7 +706,7 @@ public class DBMS {
 
     public boolean removeCategory(String name) {
         String query = "delete from snippets where snippet_category = ?";
-        PreparedStatement statement = null;
+        PreparedStatement statement;
 
         try {
             statement = connection.prepareStatement(query);
@@ -902,10 +902,10 @@ public class DBMS {
     }
 
     public TreeMap<String, TreeSet<String>> search(String[] keywords, int search) {
-        PreparedStatement statement = null;
-        StringBuilder query = null;
-        ResultSet resultSet = null;
-        TreeMap<String, TreeSet<String>> data = null;
+        PreparedStatement statement;
+        StringBuilder query;
+        ResultSet resultSet;
+        TreeMap<String, TreeSet<String>> data;
 
         // N e' il numero di opzioni di ricerca attivate dall'utente
         final int n = search;
