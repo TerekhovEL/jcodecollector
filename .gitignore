@@ -39,3 +39,7 @@ _ReSharper*/
 *.ear
 
 /target/
+
+# local database
+jCodeCollector/
+nulljCodeCollector/
