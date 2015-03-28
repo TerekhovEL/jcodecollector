@@ -321,9 +321,9 @@ public class DBMS {
             // inserimento TAG
             StringBuilder temp = new StringBuilder();
             for (int i = 0; i < newSnippet.getTags().length - 1; i++) {
-                temp.append("(" + ID_SNIPPET + ", ?), ");
+                temp.append("(").append(ID_SNIPPET).append(", ?), ");
             }
-            temp.append("(" + ID_SNIPPET + ", ?)");
+            temp.append("(").append(ID_SNIPPET).append(", ?)");
 
             statement = connection.prepareStatement(query_insertTag + temp);
             for (int i = 0; i < newSnippet.getTags().length; i++) {
