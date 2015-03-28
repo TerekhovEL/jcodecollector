@@ -935,7 +935,7 @@ public class DBMS {
                 query.append(" {$1}snippet_code{$2} like ? or ");
             }
 
-            query.append(" {$1}snippet_code{$2} like ? " + (search > 0 ? "union " : ""));
+            query.append(" {$1}snippet_code{$2} like ? ").append(search > 0 ? "union " : "");
         }
 
         // cerco all'interno dei nomi degli snippet
@@ -948,7 +948,7 @@ public class DBMS {
                 query.append(" {$1}snippet_name{$2} like ? or ");
             }
 
-            query.append(" {$1}snippet_name{$2} like ? " + (search > 0 ? "union " : ""));
+            query.append(" {$1}snippet_name{$2} like ? ").append(search > 0 ? "union " : "");
         }
 
         // cerco tra i commenti
