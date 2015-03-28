@@ -984,13 +984,6 @@ public class DBMS {
             query = new StringBuilder(t.replace("{$1}", "UPPER(").replace("{$2}", ")"));
         }
 
-        // creo un array abbastanza grande per contenere tutte le chiavi
-        ArrayList<String> temp = new ArrayList<String>(n * keywords.length);
-
-        for (int i = 0; i < n; i++) {
-            temp.addAll(Arrays.asList(keywords));
-        }
-
         try {
             statement = connection.prepareStatement(query.toString());
 
