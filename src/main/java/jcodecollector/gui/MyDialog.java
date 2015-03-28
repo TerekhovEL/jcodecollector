@@ -55,7 +55,6 @@ import jcodecollector.Loader;
 
 import jcodecollector.State;
 import jcodecollector.common.bean.Snippet;
-import jcodecollector.data.DBMS;
 import jcodecollector.document.EditorValidator;
 import jcodecollector.document.LimitedPlainDocument;
 import jcodecollector.document.LimitedSyntaxDocument;

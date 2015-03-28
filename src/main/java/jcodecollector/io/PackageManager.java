@@ -22,7 +22,6 @@ import java.util.Iterator;
 import java.util.List;
 import jcodecollector.Loader;
 
-import jcodecollector.data.DBMS;
 import jcodecollector.common.bean.Snippet;
 import jcodecollector.util.GeneralInfo;
 

@@ -32,7 +32,6 @@ import java.util.Collections;
 import java.util.TreeMap;
 import java.util.TreeSet;
 
-import javax.swing.JOptionPane;
 
 import jcodecollector.common.bean.Snippet;
 import jcodecollector.common.bean.Tag;

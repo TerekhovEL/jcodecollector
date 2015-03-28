@@ -66,7 +66,6 @@ import jcodecollector.State;
 import jcodecollector.common.bean.Snippet;
 import jcodecollector.common.bean.Syntax;
 import jcodecollector.data.Controller;
-import jcodecollector.data.DBMS;
 import jcodecollector.data.SearchFilter;
 import jcodecollector.data.settings.ApplicationSettings;
 import jcodecollector.data.settings.ApplicationSettingsManager;

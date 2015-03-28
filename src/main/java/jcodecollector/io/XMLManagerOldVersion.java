@@ -24,7 +24,6 @@ import java.util.List;
 import jcodecollector.Loader;
 
 import jcodecollector.common.bean.Snippet;
-import jcodecollector.data.DBMS;
 
 import org.jdom.Document;
 import org.jdom.Element;
