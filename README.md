@@ -20,8 +20,6 @@ Thanks you all for your interest!
 <li>SwingLayout       </li>
 <li>JDK 1.5 or greater</li>
 </ul>
- 
-I didn't know Maven when I started jCodeCollector (sorry! XD) 
 
 <b>Code quality & comments</b>
 
