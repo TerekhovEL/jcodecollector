@@ -153,11 +153,13 @@ public class DBMS {
     }
 
     @Override
-    protected void finalize() {
+    protected void finalize() throws Throwable {
         try {
             connection.close();
         } catch (SQLException ex) {
             logger.error("error during finalization: ", ex);
+        } finally {
+            super.finalize();
         }
     }
 
