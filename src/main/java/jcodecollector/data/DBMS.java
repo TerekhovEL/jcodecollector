@@ -374,15 +374,11 @@ public class DBMS {
 
             // Inserisco in un albero i tag da eliminare.
             TreeSet<String> tagsToDelete = new TreeSet<String>();
-            for (String temp : oldSnippet.getTags()) {
-                tagsToDelete.add(temp);
-            }
+            tagsToDelete.addAll(Arrays.asList(oldSnippet.getTags()));
 
             // Inserisco in un nuovo albero i tag da aggiungere.
             TreeSet<String> tagsToAdd = new TreeSet<String>();
-            for (String temp : newSnippet.getTags()) {
-                tagsToAdd.add(temp);
-            }
+            tagsToAdd.addAll(Arrays.asList(newSnippet.getTags()));
 
             // Faccio una copia del set dei vecchi tag, servira' per
             // l'operazione inversa a quella che sto per fare.
