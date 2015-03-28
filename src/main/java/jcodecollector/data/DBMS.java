@@ -37,9 +37,12 @@ import jcodecollector.common.bean.Tag;
 import jcodecollector.data.settings.ApplicationSettings;
 import jcodecollector.io.PackageManager;
 import jcodecollector.util.ApplicationConstants;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 public class DBMS {
     private static final String DBMS_DRIVER = "org.apache.derby.jdbc.EmbeddedDriver";
+    private static final Logger logger = LoggerFactory.getLogger(DBMS.class);
 
     private void init() {
         String connectionURL = "jdbc:derby:";
@@ -75,15 +78,15 @@ public class DBMS {
         }
 
         connectionURL += ";create=true";
-        System.out.println("CONNECTION URL: " + connectionURL);
+        logger.debug("CONNECTION URL: " + connectionURL);
 
         try {
             // effetto la connessione al database
             connection = DriverManager.getConnection(connectionURL);
         } catch (SQLException ex) {
-            String text = "<html><b>Cannot start jCodeCollector because an error occurred.</b><br><br><font size=-1>";
-            String message = ex.getMessage();
-            System.out.println(message);
+            String message = "Cannot start jCodeCollector because an error occurred.";
+            String text = String.format("<html><b>%s (%s)</b><br><br><font size=-1>", message, ex.getMessage());
+            logger.debug(message, ex);
             if (message.contains("not found")) {
                 text += "JCODECOLLECTOR_DB folder cannot be found in <i>"
                         + ApplicationSettings.getInstance().getDatabasePath()
@@ -115,7 +118,7 @@ public class DBMS {
                 insertNewSnippet(s);
             }
         } catch (Exception ex) {
-            System.err.println("cannot find default snippets file");
+            logger.warn("cannot find default snippets file", ex);
         }
     }
 
@@ -123,7 +126,7 @@ public class DBMS {
         try {
             connection.close();
         } catch (SQLException ex) {
-            ex.printStackTrace();
+            logger.warn("closing SQL database connection failed", ex);
             return false;
         }
 
@@ -131,12 +134,12 @@ public class DBMS {
         String connectionURL = "jdbc:derby:";
         connectionURL += databasePath;
         connectionURL += File.separator + ApplicationSettings.DB_DIR_NAME;
-        System.out.println("CONNECTION URL: " + connectionURL);
+        logger.debug("CONNECTION URL: " + connectionURL);
 
         File databaseDirectory = new File(databasePath);
         if (!databaseDirectory.exists()) {
             if (!databaseDirectory.mkdirs()) {
-                System.err.println("error creating dirs");
+                logger.error(String.format("error creating dirs %s", databaseDirectory));
             }
         }
 
@@ -144,7 +147,7 @@ public class DBMS {
             connection = DriverManager.getConnection(connectionURL);
             return true;
         } catch (SQLException ex) {
-            ex.printStackTrace();
+            logger.warn("retrieval of SQL database connection failed", ex);
             return false;
         }
     }
@@ -154,7 +157,7 @@ public class DBMS {
         try {
             connection.close();
         } catch (SQLException ex) {
-            System.err.println("error during finalization: " + ex);
+            logger.error("error during finalization: ", ex);
         }
     }
 
@@ -181,7 +184,7 @@ public class DBMS {
             return true;
         } catch (SQLException ex) {
             if (ex.getSQLState().equals("X0Y32")) {
-                System.out.println("tabled already exists");
+                logger.warn("table already exists", ex);
             } else {
                 // non dovrebbero esserci altri problemi a meno che non ci sia
                 // un fallimento del database: in questo caso il problema verra'
@@ -240,7 +243,7 @@ public class DBMS {
             try {
                 statement.close();
             } catch (SQLException ex) {
-                ex.printStackTrace();
+                logger.warn("closing SQL database connection failed", ex);
             }
         }
 
@@ -519,9 +522,7 @@ public class DBMS {
 
             return new Snippet(id, category, name, tags.toArray(new String[] { "" }), code, comment, syntax, locked);
         } catch (SQLException ex) {
-            System.err.println(ex);
-            ex.printStackTrace();
-
+            logger.warn("SQL exception occured", ex);
             return null;
         } finally {
             try {
@@ -816,7 +817,7 @@ public class DBMS {
 
             return tags;
         } catch (SQLException ex) {
-            System.err.println(ex);
+            logger.warn("SQL exception occured", ex);
             return null;
         }
     }
@@ -1064,15 +1065,13 @@ public class DBMS {
 
             return true;
         } catch (SQLException ex) {
-            System.err.println("error during altering table");
-            ex.printStackTrace();
+            logger.warn("error during altering table", ex);
             return false;
         } finally {
             try {
                 connection.setAutoCommit(true);
             } catch (SQLException ex1) {
-                System.err.println("cannot re-enabled auto commit");
-                ex1.printStackTrace();
+                logger.warn("cannot re-enabled auto commit", ex1);
             }
         }
     }

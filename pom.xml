@@ -63,6 +63,12 @@
             <artifactId>derby</artifactId>
             <version>10.11.1.1</version>
         </dependency>
+        <dependency>
+            <groupId>org.slf4j</groupId>
+            <artifactId>slf4j-api</artifactId>
+            <version>1.7.10</version>
+            <type>jar</type>
+        </dependency>
     </dependencies>
     <properties>
         <maven.compiler.source>1.6</maven.compiler.source>
