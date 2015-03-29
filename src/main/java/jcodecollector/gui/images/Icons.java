@@ -19,10 +19,10 @@ import javax.swing.ImageIcon;
 
 public final class Icons {
 
-    public static final ImageIcon LOCK_ICON = new ImageIcon(Icons.class.getResource("lock.png"));
-    public static final ImageIcon UNLOCK_ICON = new ImageIcon(Icons.class.getResource("unlock.png"));
-    public static final ImageIcon APPLICATION_ICON_BIG = new ImageIcon(Icons.class.getResource("jcc.png"));
-    public static final ImageIcon APPLICATION_ICON_SMALL = new ImageIcon(Icons.class.getResource("jcc_small.png"));
+    public static final ImageIcon LOCK_ICON = new ImageIcon(Icons.class.getResource("/lock.png"));
+    public static final ImageIcon UNLOCK_ICON = new ImageIcon(Icons.class.getResource("/unlock.png"));
+    public static final ImageIcon APPLICATION_ICON_BIG = new ImageIcon(Icons.class.getResource("/jcc.png"));
+    public static final ImageIcon APPLICATION_ICON_SMALL = new ImageIcon(Icons.class.getResource("/jcc_small.png"));
 
     private Icons() {
         // do nothing
