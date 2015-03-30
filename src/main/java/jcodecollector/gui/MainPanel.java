@@ -234,8 +234,7 @@ public class MainPanel extends JDialog implements SnippetListener, CategoryListe
 
         boolean ignoreUpdate = false;
 
-        public SyntaxItemListener() {
-            // TODO Auto-generated constructor stub
+        SyntaxItemListener() {
         }
 
         @Override
