@@ -516,13 +516,13 @@ public class MainPanel extends JDialog implements SnippetListener, CategoryListe
         labelPanel.add(commentLabel, BorderLayout.CENTER);
 
         // metto insieme i pezzi
-        JPanel southPanel = new JPanel(new BorderLayout(OS.isMacOSX() ? 6 : 3, 0));
-        southPanel.setBorder(new EmptyBorder(3, 0, 2, OS.isMacOSX() ? 3 : 0));
-        southPanel.add(commentPanel, BorderLayout.CENTER);
-        southPanel.add(labelPanel, BorderLayout.WEST);
-        southPanel.setOpaque(false);
+        JPanel retValue = new JPanel(new BorderLayout(OS.isMacOSX() ? 6 : 3, 0));
+        retValue.setBorder(new EmptyBorder(3, 0, 2, OS.isMacOSX() ? 3 : 0));
+        retValue.add(commentPanel, BorderLayout.CENTER);
+        retValue.add(labelPanel, BorderLayout.WEST);
+        retValue.setOpaque(false);
 
-        return southPanel;
+        return retValue;
     }
 
     /**
