@@ -157,6 +157,7 @@ public class MainFrame extends JFrame implements CountListener, SnippetListener,
         } else {
             setDefaultCloseOperation(DO_NOTHING_ON_CLOSE);
             addWindowListener(new WindowAdapter() {
+                @Override
                 public void windowClosing(WindowEvent e) {
                     prepareAndSaveSettings();
                     ((Window)e.getSource()).dispose();
@@ -305,6 +306,7 @@ public class MainFrame extends JFrame implements CountListener, SnippetListener,
         sourceList = new SourceList();
         // TODO non fare ricreare tutto ogni volta
         sourceList.setSourceListContextMenuProvider(new SourceListContextMenuProvider() {
+            @Override
             public JPopupMenu createContextMenu(SourceListCategory category) {
                 CATEGORY_POPUP_MANAGER_ACTION.setText(category.getText());
 
@@ -327,6 +329,7 @@ public class MainFrame extends JFrame implements CountListener, SnippetListener,
                 for (String s : mainPanel.getSyntaxes()) {
                     final JMenuItem item = new JMenuItem(s);
                     item.addActionListener(new ActionListener() {
+                        @Override
                         public void actionPerformed(ActionEvent e) {
                             controller.updateSyntax(item.getText(), CATEGORY_POPUP_MANAGER_ACTION.getText(), !state.isSnippetSaved() ? state.getSelectedSnippet() : null);
                             state.syntaxRenamed(item.getText(), CATEGORY_POPUP_MANAGER_ACTION.getText());
@@ -354,6 +357,7 @@ public class MainFrame extends JFrame implements CountListener, SnippetListener,
                 return adapter;
             }
 
+            @Override
             public JPopupMenu createContextMenu(SourceListItem item) {
                 ITEM_POPUP_MANAGER_ACTION.setText(item.getText());
                 JMenu moveItem = new JMenu("Move To...");
@@ -390,6 +394,7 @@ public class MainFrame extends JFrame implements CountListener, SnippetListener,
                 return popupMenuAdapter;
             }
 
+            @Override
             public JPopupMenu createContextMenu() {
                 return null;
             }
@@ -402,6 +407,7 @@ public class MainFrame extends JFrame implements CountListener, SnippetListener,
 
         sourceList.installSourceListControlBar(controlBar);
         sourceList.addSourceListSelectionListener(new SourceListSelectionListener() {
+            @Override
             public void sourceListItemSelected(SourceListItem item) {
                 if (item == null) {
                     state.setNameOfSelectedCategory(null);
@@ -436,29 +442,36 @@ public class MainFrame extends JFrame implements CountListener, SnippetListener,
         });
 
         sourceList.getModel().addSourceListModelListener(new SourceListModelListener() {
+            @Override
             public void categoryAdded(SourceListCategory sourceListCategory, int i) {
                 state.countUpdate();
             }
 
+            @Override
             public void itemChanged(SourceListItem item) {
             }
 
+            @Override
             public void categoryRemoved(SourceListCategory sourceListCategory) {
                 state.countUpdate();
             }
 
+            @Override
             public void itemAddedToCategory(SourceListItem sourceListItem, SourceListCategory sourceListCategory, int i) {
                 state.countUpdate();
             }
 
+            @Override
             public void itemAddedToItem(SourceListItem sourceListItem, SourceListItem parentSourceListItem, int i) {
                 state.countUpdate();
             }
 
+            @Override
             public void itemRemovedFromCategory(SourceListItem sourceListItem, SourceListCategory sourceListCategory) {
                 state.countUpdate();
             }
 
+            @Override
             public void itemRemovedFromItem(SourceListItem sourceListItem, SourceListItem parentsoSourceListItem) {
                 state.countUpdate();
             }
@@ -537,6 +550,7 @@ public class MainFrame extends JFrame implements CountListener, SnippetListener,
 
         if (OS.isMacOSX()) {
             getRootPane().registerKeyboardAction(new ActionListener() {
+                @Override
                 public void actionPerformed(ActionEvent e) {
                     searchTextField.requestFocusInWindow();
                 }
@@ -547,6 +561,7 @@ public class MainFrame extends JFrame implements CountListener, SnippetListener,
 
         if (!OS.isMacOSX()) {
             getRootPane().registerKeyboardAction(new ActionListener() {
+                @Override
                 public void actionPerformed(ActionEvent e) {
                     searchTextField.requestFocusInWindow();
                     searchTextField.selectAll();
@@ -578,6 +593,7 @@ public class MainFrame extends JFrame implements CountListener, SnippetListener,
 
     /** Azione di creazione di un nuovo snippet. */
     final ActionListener NEW_EMPTY_SNIPPET_ACTION = new ActionListener() {
+        @Override
         public void actionPerformed(ActionEvent e) {
             sourceList.clearSelection();
             mainPanel.createNewSnippet();
@@ -593,6 +609,7 @@ public class MainFrame extends JFrame implements CountListener, SnippetListener,
 
     /** Azione di creazione di un nuovo snippet a partire dalla clipboard. */
     final ActionListener NEW_SNIPPET_FROM_CLIPBOARD_ACTION = new ActionListener() {
+        @Override
         public void actionPerformed(ActionEvent e) {
             sourceList.clearSelection();
             mainPanel.pasteFromClipboard();
@@ -607,6 +624,7 @@ public class MainFrame extends JFrame implements CountListener, SnippetListener,
 
     /** Azione di rimozione dello snippet selezionato. */
     final ActionListener REMOVE_SNIPPET_ACTION = new ActionListener() {
+        @Override
         public void actionPerformed(ActionEvent e) {
             if (sourceList.getSelectedItem() == null) {
                 return;
@@ -634,12 +652,14 @@ public class MainFrame extends JFrame implements CountListener, SnippetListener,
     }
 
     final ActionListener COPY_TO_CLIPBOARD_ACTION = new ActionListener() {
+        @Override
         public void actionPerformed(ActionEvent e) {
             mainPanel.copyToClipboard();
         }
     };
 
     final ActionListener LOCK_SNIPPET_ACTION = new ActionListener() {
+        @Override
         public void actionPerformed(ActionEvent e) {
             mainPanel.getLockButton().doClick();
         }
@@ -647,6 +667,7 @@ public class MainFrame extends JFrame implements CountListener, SnippetListener,
 
     /** Effettua il salvataggio dello snippet corrente. */
     final ActionListener SAVE_SNIPPET_ACTION = new ActionListener() {
+        @Override
         public void actionPerformed(ActionEvent e) {
             Snippet newSnippet = state.getCurrentSnippet();
             Snippet oldSnippet = state.getPreviousSnippet();
@@ -684,6 +705,7 @@ public class MainFrame extends JFrame implements CountListener, SnippetListener,
     };
 
     final ActionListener RELOAD_SOURCE_LIST_ACTION = new ActionListener() {
+        @Override
         public void actionPerformed(ActionEvent e) {
             mainPanel.clear();
             reloadSourceList();
@@ -691,6 +713,7 @@ public class MainFrame extends JFrame implements CountListener, SnippetListener,
     };
 
     final ActionListener SHOW_SEARCH_PANEL_ACTION = new ActionListener() {
+        @Override
         public void actionPerformed(ActionEvent e) {
             if (!OS.isMacOSX()) {
                 if (hidePanel.getParent() == null) {
@@ -707,6 +730,7 @@ public class MainFrame extends JFrame implements CountListener, SnippetListener,
     };
 
     final ActionListener CANCEL_BUTTON_SEARCH_ACTION = new ActionListener() {
+        @Override
         public void actionPerformed(ActionEvent e) {
             searchTextField.setText("");
             if (state.isSearchActive()) {
@@ -718,6 +742,7 @@ public class MainFrame extends JFrame implements CountListener, SnippetListener,
     };
 
     final ActionListener HIDE_SEARCH_PANEL_ACTION = new ActionListener() {
+        @Override
         public void actionPerformed(ActionEvent e) {
             if (!OS.isMacOSX() && hidePanel.getParent() != null) {
                 getContentPane().remove(hidePanel);
@@ -728,6 +753,7 @@ public class MainFrame extends JFrame implements CountListener, SnippetListener,
     };
 
     final ActionListener START_SEARCH_ACTION = new ActionListener() {
+        @Override
         public void actionPerformed(ActionEvent e) {
             // interrompo se l'utente ha inserito una stringa vuota
             String text = searchTextField.getText().trim();
@@ -775,24 +801,28 @@ public class MainFrame extends JFrame implements CountListener, SnippetListener,
     };
 
     final ActionListener IMPORT_PACKAGE_ACTION = new ActionListener() {
+        @Override
         public void actionPerformed(ActionEvent e) {
             importPackage();
         }
     };
 
     final ActionListener EXPORT_ALL_SNIPPETS_ACTION = new ActionListener() {
+        @Override
         public void actionPerformed(ActionEvent e) {
             exportPackage(null);
         }
     };
 
     final ActionListener EXPORT_CATEGORY_ACTION = new ActionListener() {
+        @Override
         public void actionPerformed(ActionEvent e) {
             exportPackage(e.getActionCommand());
         }
     };
 
     final ActionListener MINIMIZE_WINDOW_ACTION = new ActionListener() {
+        @Override
         public void actionPerformed(ActionEvent e) {
             if (MainFrame.this.getExtendedState() == JFrame.NORMAL) {
                 setExtendedState(JFrame.ICONIFIED);
@@ -801,12 +831,14 @@ public class MainFrame extends JFrame implements CountListener, SnippetListener,
     };
 
     final ActionListener CLOSE_WINDOW_ACTION = new ActionListener() {
+        @Override
         public void actionPerformed(ActionEvent e) {
             MainFrame.this.setVisible(false);
         }
     };
 
     final ActionListener ZOOM_WINDOW_ACTION = new ActionListener() {
+        @Override
         public void actionPerformed(ActionEvent e) {
             if (MainFrame.this.getExtendedState() == JFrame.NORMAL) {
                 MainFrame.this.setExtendedState(JFrame.MAXIMIZED_BOTH);
@@ -817,6 +849,7 @@ public class MainFrame extends JFrame implements CountListener, SnippetListener,
     };
 
     final ActionListener CHANGE_LOCATION_ACTION = new ActionListener() {
+        @Override
         public void actionPerformed(ActionEvent e) {
             File newLocation = null;
             File oldLocation = new File(ApplicationSettings.getInstance().getDatabasePath() + "/jCodeCollector");
@@ -1051,6 +1084,7 @@ public class MainFrame extends JFrame implements CountListener, SnippetListener,
     final MyAction ITEM_POPUP_MANAGER_ACTION = new MyAction() {
         private static final long serialVersionUID = 6864009534779492593L;
 
+        @Override
         public void actionPerformed(ActionEvent e) {
             // leggo la voce di menu cliccata dall'utente
             menuItemClicked = e.getActionCommand();
@@ -1126,6 +1160,7 @@ public class MainFrame extends JFrame implements CountListener, SnippetListener,
     final MyAction CATEGORY_POPUP_MANAGER_ACTION = new MyAction() {
         private static final long serialVersionUID = -8767979402119895694L;
 
+        @Override
         public void actionPerformed(ActionEvent e) {
             // leggo la voce di menu cliccata dall'utente
             menuItemClicked = e.getActionCommand();
@@ -1211,6 +1246,7 @@ public class MainFrame extends JFrame implements CountListener, SnippetListener,
             dialog.setTitle("Import Snippets From A Package...");
             dialog.setModal(true);
             dialog.setFilenameFilter(new FilenameFilter() {
+                @Override
                 public boolean accept(File dir, String name) {
                     return name.endsWith(ApplicationConstants.JCC_EXTENSION);
                 }
@@ -1285,6 +1321,7 @@ public class MainFrame extends JFrame implements CountListener, SnippetListener,
             dialog.setTitle("Create A Package For " + (name == null ? "All Snippets" : name) + "...");
             dialog.setModal(true);
             dialog.setFilenameFilter(new FilenameFilter() {
+                @Override
                 public boolean accept(File dir, String name) {
                     return false;
                 }
@@ -1443,6 +1480,7 @@ public class MainFrame extends JFrame implements CountListener, SnippetListener,
         return aboutWindow;
     }
 
+    @Override
     public void countUpdate(int categories, int snippets) {
         String temp = categories + " categor";
         temp += (categories == 1) ? "y" : "ies";
@@ -1452,17 +1490,21 @@ public class MainFrame extends JFrame implements CountListener, SnippetListener,
         statusLabel.setText(temp);
     }
 
+    @Override
     public void categoriesUpdated(String selected) {
     }
 
+    @Override
     public void categoryRemoved(String name) {
         removeCategoryFromSourceList(name);
     }
 
+    @Override
     public void categoryRenamed(String oldName, String newName) {
         moveCategoryInSourceList(oldName, newName);
     }
 
+    @Override
     public void snippetEdited(Snippet snippet) {
     }
 
@@ -1473,10 +1515,12 @@ public class MainFrame extends JFrame implements CountListener, SnippetListener,
      *
      * @param snippet Lo snippet rimosso.
      */
+    @Override
     public void snippetRemoved(Snippet snippet) {
         removeSnippetFromSourceList(snippet);
     }
 
+    @Override
     public void snippetRenamed(String oldName, String newName) {
     }
 
@@ -1486,6 +1530,7 @@ public class MainFrame extends JFrame implements CountListener, SnippetListener,
     public void syntaxUpdated(ArrayList<Syntax> syntaxes) {
     }
 
+    @Override
     public void updateSnippetStatus(Snippet snippet, boolean validated, boolean saved, boolean locked) {
     }
 
@@ -1495,6 +1540,7 @@ public class MainFrame extends JFrame implements CountListener, SnippetListener,
      * @param documentModified <code>true</code> if there are snippets unsaved,
      *        <code>false</code> otherwise.
      */
+    @Override
     public void updateWindowStatus(boolean documentModified) {
         if (OS.isMacOSX()) {
             getRootPane().putClientProperty("Window.documentModified", documentModified);
@@ -1513,12 +1559,14 @@ public class MainFrame extends JFrame implements CountListener, SnippetListener,
         }
     }
 
+    @Override
     public void updateLineNumbers(boolean enabled) {
         mainPanel.getScrollPanel().setLineNumbersEnabled(!mainPanel.getScrollPanel().getLineNumbersEnabled());
         mainPanel.getScrollPanel().setLineNumbersEnabled(!mainPanel.getScrollPanel().getLineNumbersEnabled());
     }
 
     /** @see jcodecollector.listener.SearchListener#updateSearch(boolean) */
+    @Override
     public void updateSearch(boolean oldStatus) {
         boolean newStatus = state.isSearchActive();
 
@@ -1556,6 +1604,7 @@ public class MainFrame extends JFrame implements CountListener, SnippetListener,
         }
     }
 
+    @Override
     public void syntaxRenamed(String newName, String category) {
     }
 
@@ -1668,6 +1717,7 @@ public class MainFrame extends JFrame implements CountListener, SnippetListener,
         if (!OS.isMacOSX()) {
             JMenuItem aboutItem = new JMenuItem("About jCodeCollector");
             aboutItem.addActionListener(new ActionListener() {
+                @Override
                 public void actionPerformed(ActionEvent e) {
                     MainFrame.this.aboutWindow.setLocationRelativeTo(null);
                     MainFrame.this.aboutWindow.setVisible(true);
@@ -1677,6 +1727,7 @@ public class MainFrame extends JFrame implements CountListener, SnippetListener,
             JMenuItem quitApplication = new JMenuItem("Quit jCodeCollector");
             quitApplication.setAccelerator(KeyStroke.getKeyStroke(KeyEvent.VK_Q, InputEvent.CTRL_DOWN_MASK));
             quitApplication.addActionListener(new ActionListener() {
+                @Override
                 public void actionPerformed(ActionEvent e) {
                     prepareAndSaveSettings();
                     MainFrame.this.setVisible(false);
@@ -1694,6 +1745,7 @@ public class MainFrame extends JFrame implements CountListener, SnippetListener,
         showLineNumbersMenuItem = new JCheckBoxMenuItem("Show Line Numbers");
         showLineNumbersMenuItem.setAccelerator(KeyStroke.getKeyStroke(KeyEvent.VK_E, MENU_SHORTCUT_KEY_MASK | InputEvent.SHIFT_DOWN_MASK));
         showLineNumbersMenuItem.addActionListener(new ActionListener() {
+            @Override
             public void actionPerformed(ActionEvent e) {
                 mainPanel.getScrollPanel().setLineNumbersEnabled(showLineNumbersMenuItem.isSelected());
             }
@@ -1706,6 +1758,7 @@ public class MainFrame extends JFrame implements CountListener, SnippetListener,
         showCommentPanelMenuItem.setAccelerator(KeyStroke.getKeyStroke(KeyEvent.VK_D, MENU_SHORTCUT_KEY_MASK | InputEvent.SHIFT_DOWN_MASK));
         showCommentPanelMenuItem.setSelected(ApplicationSettings.getInstance().isCommentPanelVisible());
         showCommentPanelMenuItem.addActionListener(new ActionListener() {
+            @Override
             public void actionPerformed(ActionEvent e) {
                 if (showCommentPanelMenuItem.isSelected()) {
                     // mainPanel.arrowDownSplitButton.doClick();
@@ -1733,6 +1786,7 @@ public class MainFrame extends JFrame implements CountListener, SnippetListener,
         autoHideCommentPanelMenuItem = new JCheckBoxMenuItem("Auto Hide Comment If Empty");
         autoHideCommentPanelMenuItem.setSelected(ApplicationSettings.getInstance().isAutoHideCommentEnabled());
         autoHideCommentPanelMenuItem.addActionListener(new ActionListener() {
+            @Override
             public void actionPerformed(ActionEvent e) {
                 checkAutoHideCommentPanel(state.getSelectedSnippet(), true);
             }
@@ -1766,6 +1820,7 @@ public class MainFrame extends JFrame implements CountListener, SnippetListener,
 
         final JCheckBoxMenuItem[] searchItems = { namesMenuItem, tagsMenuItem, codeMenuItem, commentsMenuItem };
         ItemListener itemListener = new ItemListener() {
+            @Override
             public void itemStateChanged(ItemEvent e) {
                 int selected = 0; // number of different search enabled
                 for (JCheckBoxMenuItem item : searchItems) {
@@ -1800,6 +1855,7 @@ public class MainFrame extends JFrame implements CountListener, SnippetListener,
         }
 
         caseMenuItem.addItemListener(new ItemListener() {
+            @Override
             public void itemStateChanged(ItemEvent e) {
                 SearchFilter.getInstance().setSearchCaseSensitive(caseMenuItem.isSelected());
             }
@@ -1833,6 +1889,7 @@ public class MainFrame extends JFrame implements CountListener, SnippetListener,
         saveSnippetMenuItem = new JMenuItem("Save");
         saveSnippetMenuItem.setAccelerator(KeyStroke.getKeyStroke(KeyEvent.VK_S, MENU_SHORTCUT_KEY_MASK));
         saveSnippetMenuItem.addActionListener(new ActionListener() {
+            @Override
             public void actionPerformed(ActionEvent e) {
                 mainPanel.getSaveButton().doClick();
             }
@@ -1845,6 +1902,7 @@ public class MainFrame extends JFrame implements CountListener, SnippetListener,
         lockSnippetMenuItem = new JMenuItem("Lock");
         lockSnippetMenuItem.setAccelerator(KeyStroke.getKeyStroke(KeyEvent.VK_L, MENU_SHORTCUT_KEY_MASK | InputEvent.SHIFT_DOWN_MASK));
         lockSnippetMenuItem.addActionListener(new ActionListener() {
+            @Override
             public void actionPerformed(ActionEvent e) {
                 mainPanel.getLockButton().doClick();
             }
@@ -1893,6 +1951,7 @@ public class MainFrame extends JFrame implements CountListener, SnippetListener,
         setJMenuBar(menuBar);
     }
 
+    @Override
     public void updateMenu(boolean enabled, boolean resetExportSubMenu) {
         Snippet name = state.getSelectedSnippet();
 

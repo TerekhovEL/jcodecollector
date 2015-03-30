@@ -53,6 +53,7 @@ public class MacUtilities {
 
         // open about window
         application.setAboutHandler(new AboutHandler() {
+            @Override
             public void handleAbout(AboutEvent e) {
                 JDialog aboutWindow = mainFrame.getAboutWindow();
                 aboutWindow.setLocationRelativeTo(mainFrame);
@@ -62,6 +63,7 @@ public class MacUtilities {
 
         // CMD+Q
         application.setQuitHandler(new QuitHandler() {
+            @Override
             public void handleQuitRequestWith(QuitEvent e, QuitResponse r) {
                 mainFrame.prepareAndSaveSettings();
                 ((Window)e.getSource()).dispose();
@@ -70,6 +72,7 @@ public class MacUtilities {
 
         // re-open when main window is not visible
         application.addAppEventListener(new AppReOpenedListener() {
+            @Override
             public void appReOpened(AppReOpenedEvent e) {
                 mainFrame.setVisible(true);
             }

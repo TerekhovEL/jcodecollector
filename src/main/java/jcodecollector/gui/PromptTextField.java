@@ -24,6 +24,7 @@ import javax.swing.JTextField;
 
 public class PromptTextField extends JTextField {
     static FocusListener focusListener = new FocusListener() {
+        @Override
 	public void focusGained(FocusEvent e) {
 	    PromptTextField src = (PromptTextField) e.getSource();
 	    if (src.state == STATE_PROMPT) {
@@ -31,6 +32,7 @@ public class PromptTextField extends JTextField {
 	    }
 	}
 
+        @Override
 	public void focusLost(FocusEvent e) {
 	    PromptTextField src = (PromptTextField) e.getSource();
 	    if (src.getText().length() == 0)
@@ -59,6 +61,7 @@ public class PromptTextField extends JTextField {
 	}
     }
 
+    @Override
     public String getText() {
 	if (state == STATE_PROMPT) {
 	    return "";
@@ -81,6 +84,7 @@ public class PromptTextField extends JTextField {
 	}
     }
 
+    @Override
     public void setText(String s) {
 	if (state == STATE_UNDEFINED) {
 	    super.setText(s);

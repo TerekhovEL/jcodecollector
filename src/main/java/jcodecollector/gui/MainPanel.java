@@ -238,6 +238,7 @@ public class MainPanel extends JDialog implements SnippetListener, CategoryListe
             // TODO Auto-generated constructor stub
         }
 
+        @Override
         public void itemStateChanged(ItemEvent e) {
             // non mi importa sapere quando viene deselezionato
             if (e.getStateChange() == ItemEvent.DESELECTED) {
@@ -381,6 +382,7 @@ public class MainPanel extends JDialog implements SnippetListener, CategoryListe
     private void initListeners() {
         // registra l'azione di salvataggio dello snippet
         saveButton.addActionListener(new ActionListener() {
+            @Override
             public void actionPerformed(ActionEvent e) {
                 mainframe.SAVE_SNIPPET_ACTION.actionPerformed(e);
             }
@@ -388,6 +390,7 @@ public class MainPanel extends JDialog implements SnippetListener, CategoryListe
 
         // registra l'azione di bloccaggio/sbloccaggio dello snippet
         lockButton.addActionListener(new ActionListener() {
+            @Override
             public void actionPerformed(ActionEvent e) {
                 if (State.getInstance().isSnippetSaved()) {
                     State.getInstance().updateSnippetStatus(state.getCurrentSnippet(), true, true, lockButton.isSelected());
@@ -638,6 +641,7 @@ public class MainPanel extends JDialog implements SnippetListener, CategoryListe
     }
 
     /** @see CategoryListener#categoryRemoved(String) */
+    @Override
     public void categoryRemoved(String name) {
         // rimuove la categoria dall'elenco a discesa
         categories.removeItem(name);
@@ -655,6 +659,7 @@ public class MainPanel extends JDialog implements SnippetListener, CategoryListe
     /**
      * @see SnippetListener#snippetRenamed(String, String)
      */
+    @Override
     public void categoryRenamed(String oldName, String newName) {
         JTextField textField = (JTextField) categories.getEditor().getEditorComponent();
 
@@ -666,6 +671,7 @@ public class MainPanel extends JDialog implements SnippetListener, CategoryListe
     }
 
     /** @see jcodecollector.listener.SnippetListener#snippetRemoved(Snippet) */
+    @Override
     public void snippetRemoved(Snippet snippet) {
         if (nameTextField.getText().trim().equals(snippet.getName())) {
             clear();
@@ -676,6 +682,7 @@ public class MainPanel extends JDialog implements SnippetListener, CategoryListe
      * @see jcodecollector.listener.SnippetListener#snippetRenamed(String,
      *      String)
      */
+    @Override
     public void snippetRenamed(String oldName, String newName) {
         if (!oldName.equals(newName)) {
             nameTextField.setText(newName);
@@ -683,6 +690,7 @@ public class MainPanel extends JDialog implements SnippetListener, CategoryListe
     }
 
     /** @see jcodecollector.listener.CategoryListener#categoriesUpdated(String) */
+    @Override
     public void categoriesUpdated(String selected) {
         List<String> array = Loader.DBMS_INSTANCE.getCategories();
         Collections.sort(array);
@@ -701,6 +709,7 @@ public class MainPanel extends JDialog implements SnippetListener, CategoryListe
     }
 
     /** @see jcodecollector.listener.SnippetListener#snippetEdited(Snippet) */
+    @Override
     public void snippetEdited(Snippet snippet) {
         ArrayList<String> items = new ArrayList<String>();
         for (int i = 0; i < categories.getModel().getSize(); i++) {
@@ -729,6 +738,7 @@ public class MainPanel extends JDialog implements SnippetListener, CategoryListe
      * @see jcodecollector.listener.SnippetListener#updateSnippetStatus(boolean,
      *      boolean, boolean)
      */
+    @Override
     public void updateSnippetStatus(Snippet snippet, boolean validated, boolean saved, boolean locked) {
         lockButton.setEnabled(saved && validated);
         saveButton.setEnabled(validated && !locked);
@@ -739,6 +749,7 @@ public class MainPanel extends JDialog implements SnippetListener, CategoryListe
         Loader.DBMS_INSTANCE.lockSnippet(snippet, lockButton.isSelected());
     }
 
+    @Override
     public void syntaxRenamed(String newName, String category) {
         if (!State.getInstance().isSnippetSaved()) {
             return;

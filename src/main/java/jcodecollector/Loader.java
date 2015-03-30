@@ -61,6 +61,7 @@ public class Loader {
         ApplicationSettingsManager.readApplicationSettings();
 
         SwingUtilities.invokeLater(new Runnable() {
+            @Override
             public void run() {
                 try {
                     MainFrame mainFrame = new MainFrame();

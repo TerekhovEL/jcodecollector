@@ -166,6 +166,7 @@ public class State implements SnippetListener, CategoryListener, CountListener, 
 	 * @see jcodecollector.listener.CategoryListener#categoriesUpdated(java.
 	 *      lang.String)
 	 */
+        @Override
 	public void categoriesUpdated(String selected) {
 		for (CategoryListener listener : categoryListeners) {
 			listener.categoriesUpdated(selected);
@@ -176,6 +177,7 @@ public class State implements SnippetListener, CategoryListener, CountListener, 
 	 * @see jcodecollector.listener.CategoryListener#categoryRemoved(java.lang
 	 *      .String)
 	 */
+        @Override
 	public void categoryRemoved(String name) {
 		for (CategoryListener listener : categoryListeners) {
 			listener.categoryRemoved(name);
@@ -186,6 +188,7 @@ public class State implements SnippetListener, CategoryListener, CountListener, 
 	 * @see jcodecollector.listener.CategoryListener#categoryRenamed(java.lang
 	 *      .String, java.lang.String)
 	 */
+        @Override
 	public void categoryRenamed(String oldName, String newName) {
 		for (CategoryListener listener : categoryListeners) {
 			listener.categoryRenamed(oldName, newName);
@@ -193,6 +196,7 @@ public class State implements SnippetListener, CategoryListener, CountListener, 
 	}
 
 	/** @see jcodecollector.listener.SnippetListener#snippetRemoved(Snippet) */
+        @Override
 	public void snippetRemoved(Snippet snippet) {
 		for (SnippetListener listener : snippetListeners) {
 			listener.snippetRemoved(snippet);
@@ -203,6 +207,7 @@ public class State implements SnippetListener, CategoryListener, CountListener, 
 	 * @see jcodecollector.listener.SnippetListener#snippetRenamed(java.lang.String,
 	 *      java.lang.String)
 	 */
+        @Override
 	public void snippetRenamed(String oldName, String newName) {
 		for (SnippetListener listener : snippetListeners) {
 			listener.snippetRenamed(oldName, newName);
@@ -210,6 +215,7 @@ public class State implements SnippetListener, CategoryListener, CountListener, 
 	}
 
 	/** @see SnippetListener#snippetEdited(Snippet) */
+        @Override
 	public void snippetEdited(Snippet snippet) {
 		for (SnippetListener listener : snippetListeners) {
 			listener.snippetEdited(snippet);
@@ -217,6 +223,7 @@ public class State implements SnippetListener, CategoryListener, CountListener, 
 	}
 
 	/** @see SnippetListener#syntaxRenamed(String, String) */
+        @Override
 	public void syntaxRenamed(String newName, String category) {
 		for (SnippetListener listener : snippetListeners) {
 			listener.syntaxRenamed(newName, category);
@@ -243,12 +250,14 @@ public class State implements SnippetListener, CategoryListener, CountListener, 
 	}
 
 	/** @see CountListener#countUpdate(int, int) */
+        @Override
 	public void countUpdate(int categories, int snippets) {
 		for (CountListener listener : countListeners) {
 			listener.countUpdate(categories, snippets);
 		}
 	}
 
+        @Override
 	public void updateSnippetStatus(Snippet snippet, boolean validated, boolean saved, boolean locked) {
 		this.snippetValidated = validated;
 		this.snippetSaved = saved;
@@ -259,6 +268,7 @@ public class State implements SnippetListener, CategoryListener, CountListener, 
 		}
 	}
 
+        @Override
 	public void updateMenu(boolean enabled, boolean resetExportSubMenu) {
 		for (MenuListener listener : menuListeners) {
 			listener.updateMenu(enabled, resetExportSubMenu);
@@ -266,6 +276,7 @@ public class State implements SnippetListener, CategoryListener, CountListener, 
 	}
 
 	/** @see WindowListener#updateWindowStatus(boolean) */
+        @Override
 	public void updateWindowStatus(boolean documentModified) {
 		for (WindowListener listener : windowListeners) {
 			listener.updateWindowStatus(documentModified);
@@ -273,6 +284,7 @@ public class State implements SnippetListener, CategoryListener, CountListener, 
 	}
 
 	/** @see WindowListener#updateLineNumbers(boolean) */
+        @Override
 	public void updateLineNumbers(boolean enabled) {
 		for (WindowListener listener : windowListeners) {
 			listener.updateLineNumbers(enabled);
@@ -377,6 +389,7 @@ public class State implements SnippetListener, CategoryListener, CountListener, 
 	}
 
 	/** @see SearchListener#updateSearch(boolean) */
+        @Override
 	public void updateSearch(boolean active) {
 		searchActive = active;
 

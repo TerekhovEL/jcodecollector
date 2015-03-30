@@ -102,16 +102,19 @@ public class EditorValidator implements DocumentListener {
     }
 
     /** @see DocumentListener#changedUpdate(DocumentEvent) */
+    @Override
     public void changedUpdate(DocumentEvent e) {
         validate();
     }
 
     /** @see DocumentListener#insertUpdate(DocumentEvent) */
+    @Override
     public void insertUpdate(DocumentEvent e) {
         validate();
     }
 
     /** @see DocumentListener#removeUpdate(DocumentEvent) */
+    @Override
     public void removeUpdate(DocumentEvent e) {
         validate();
     }
