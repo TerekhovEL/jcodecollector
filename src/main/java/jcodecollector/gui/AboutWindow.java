@@ -28,14 +28,14 @@ import jcodecollector.util.GeneralInfo;
 /**
  * La finestra di about di jCodeCollector. Mostra la versione dell'applicazione
  * e le informazioni sull'autore.
- * 
+ *
  * @author Alessandro Cocco
  */
 public class AboutWindow extends JDialog {
 
     /**
      * Crea la finestra di about di jCodeCollector.
-     * 
+     *
      * @param mainFrame Il riferimento alla finestra principale
      *        dell'applicazione.
      */

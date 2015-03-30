@@ -26,7 +26,7 @@ import org.fife.ui.rsyntaxtextarea.SyntaxConstants;
 /**
  * Implementazione di un {@link RSyntaxDocument} che aggiunge un limite al
  * numero massimo di caratteri inseribili.
- * 
+ *
  * @author Alessandro Cocco
  */
 public class LimitedSyntaxDocument extends RSyntaxDocument {
@@ -37,7 +37,7 @@ public class LimitedSyntaxDocument extends RSyntaxDocument {
 	/**
 	 * Crea un {@link LimitedSyntaxDocument} usando <code>syntax</code> come
 	 * sintassi e che puo' contenere al massimo <code>maxSize</code> caratteri.
-	 * 
+	 *
 	 * @param syntax La sintassi del documento.
 	 * @param maxSize Il massimo numero di caratteri che possono essere inseriti
 	 *        nel documento.
@@ -50,7 +50,7 @@ public class LimitedSyntaxDocument extends RSyntaxDocument {
 	/**
 	 * Crea un {@link LimitedSyntaxDocument} usando la sintassi predefinita e
 	 * che puo' contenere al massimo <code>maxSize</code> caratteri.
-	 * 
+	 *
 	 * @param maxSize Il massimo numero di caratteri che possono essere inseriti
 	 *        nel documento.
 	 */

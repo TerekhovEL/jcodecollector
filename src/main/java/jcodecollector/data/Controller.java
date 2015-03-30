@@ -16,6 +16,7 @@
 package jcodecollector.data;
 
 import java.util.ArrayList;
+import java.util.List;
 import java.util.TreeMap;
 import java.util.TreeSet;
 import jcodecollector.Loader;
@@ -36,37 +37,56 @@ public class Controller {
         return controller;
     }
 
-    public boolean removeSnippet(String name) {
-        return State.getInstance().isSearchActive() ? searchManager.removeSnippet(name) : Loader.DBMS_INSTANCE.removeSnippet(name);
+    public void removeSnippet(Snippet name) {
+        if (State.getInstance().isSearchActive()) {
+            searchManager.removeSnippet(name);
+        }else {
+            Loader.DBMS_INSTANCE.removeSnippet(name);
+        }
     }
 
-    public boolean updateSnippet(Snippet oldSnippet, Snippet newSnippet) {
-        return State.getInstance().isSearchActive() ? searchManager.updateSnippet(oldSnippet, newSnippet) : Loader.DBMS_INSTANCE.updateSnippet(oldSnippet, newSnippet);
+    public void updateSnippet(Snippet oldSnippet, Snippet newSnippet) {
+        if(State.getInstance().isSearchActive()) {
+            searchManager.updateSnippet(oldSnippet, newSnippet);
+        }else {
+            Loader.DBMS_INSTANCE.updateSnippet(oldSnippet, newSnippet);
+        }
     }
 
-    public boolean removeCategory(String text) {
-        return State.getInstance().isSearchActive() ? searchManager.removeCategory(text)
-                : Loader.DBMS_INSTANCE.removeCategory(text);
+    public void removeCategory(String text) {
+        if(State.getInstance().isSearchActive()) {
+            searchManager.removeCategory(text);
+        }else {
+            Loader.DBMS_INSTANCE.removeCategory(text);
+        }
     }
 
-    public boolean renameCategory(String oldName, String newName) {
-        return State.getInstance().isSearchActive() ? searchManager.renameCategory(oldName, newName) : Loader.DBMS_INSTANCE.renameCategory(oldName, newName);
+    public void renameCategory(String oldName, String newName) {
+        if(State.getInstance().isSearchActive()) {
+            searchManager.renameCategory(oldName, newName);
+        }else {
+            Loader.DBMS_INSTANCE.renameCategory(oldName, newName);
+        }
     }
 
-    public boolean updateSyntax(String newSyntax, String category, String selectedSnippet) {
-        return State.getInstance().isSearchActive() ? searchManager.setSyntax(newSyntax, category, selectedSnippet) : Loader.DBMS_INSTANCE.setSyntaxToCategory(newSyntax, category, selectedSnippet);
+    public void updateSyntax(String newSyntax, String category, Snippet selectedSnippet) {
+        if(State.getInstance().isSearchActive()) {
+            searchManager.setSyntax(newSyntax, category, selectedSnippet);
+        }else {
+            Loader.DBMS_INSTANCE.setSyntaxToCategory(newSyntax, category, selectedSnippet);
+        }
     }
 
     /**
      * Restituisce l'elenco delle categorie presenti nel database.
-     * 
+     *
      * @return l'elenco delle categorie presenti nel database
      */
-    public ArrayList<String> getAllCategories() {
+    public List<String> getAllCategories() {
         return Loader.DBMS_INSTANCE.getCategories();
     }
 
-    public ArrayList<String> getCategories() {
+    public List<String> getCategories() {
         return State.getInstance().isSearchActive() ? searchManager.getCategories() : Loader.DBMS_INSTANCE.getCategories();
     }
 
@@ -78,23 +98,27 @@ public class Controller {
         return Loader.DBMS_INSTANCE.getSnippet(name);
     }
 
-    public ArrayList<String> getSnippetsName(String category) {
-        return State.getInstance().isSearchActive() ? searchManager.getSnippets(category) : Loader.DBMS_INSTANCE.getSnippetsNames(category);
+    public List<Snippet> getSnippetsName(String category) {
+        if(State.getInstance().isSearchActive()) {
+            return searchManager.getSnippets(category);
+        }else {
+            return Loader.DBMS_INSTANCE.getSnippetsNames(category);
+        }
     }
 
-    public boolean insertNewSnippet(Snippet newSnippet) {
-        return Loader.DBMS_INSTANCE.insertNewSnippet(newSnippet);
+    public void insertNewSnippet(Snippet newSnippet) {
+        Loader.DBMS_INSTANCE.insertNewSnippet(newSnippet);
     }
 
-    public boolean lockSnippet(String name, boolean locked) {
-        return Loader.DBMS_INSTANCE.lockSnippet(name, locked);
+    public void lockSnippet(Snippet snippet, boolean locked) {
+        Loader.DBMS_INSTANCE.lockSnippet(snippet, locked);
     }
 
     public boolean isSearchActive() {
         return State.getInstance().isSearchActive();
     }
 
-    public void setData(TreeMap<String, TreeSet<String>> data) {
+    public void setData(TreeMap<String, TreeSet<Snippet>> data) {
         searchManager.setData(data);
     }
 

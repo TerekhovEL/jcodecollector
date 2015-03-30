@@ -13,28 +13,24 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package jcodecollector.exceptions;
+package jcodecollector.service;
 
 /**
  *
  * @author richter
  */
-public class ConnectionException extends RuntimeException {
-    private static final long serialVersionUID = 1L;
+public class DefaultIdGenerator implements IdGenerator {
+    private final Object lastIdLock = new Object();
+    private Integer lastId = 0;
 
-    public ConnectionException() {
+    public DefaultIdGenerator() {
     }
 
-    public ConnectionException(String message, Throwable cause) {
-        super(message, cause);
+    @Override
+    public int getNextId() {
+        synchronized(lastIdLock) {
+            int nextId = lastId++;
+            return nextId;
+        }
     }
-
-    public ConnectionException(Throwable cause) {
-        super(cause);
-    }
-
-    public ConnectionException(String message) {
-        super(message);
-    }
-
 }

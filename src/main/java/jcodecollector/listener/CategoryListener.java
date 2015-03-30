@@ -19,7 +19,7 @@ public interface CategoryListener {
 
     /**
      * Invocato quando una categoria viene rinominata.
-     * 
+     *
      * @param oldName Il vecchio nome della categoria.
      * @param newName Il nuovo nome della categoria.
      */
@@ -27,14 +27,14 @@ public interface CategoryListener {
 
     /**
      * Invocato quando una categoria viene rimossa.
-     * 
+     *
      * @param name Il nome della categoria rimossa.
      */
     public void categoryRemoved(String name);
 
     /**
      * Invocato quando l'elenco delle categorie viene aggiornato.
-     * 
+     *
      * @param selected La categoria che risulta selezionata.
      */
     public void categoriesUpdated(String selected);

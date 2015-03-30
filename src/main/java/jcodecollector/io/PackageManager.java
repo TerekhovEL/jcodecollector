@@ -17,16 +17,20 @@ package jcodecollector.io;
 
 import java.io.File;
 import java.io.FileOutputStream;
+import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Iterator;
+import java.util.LinkedList;
 import java.util.List;
 import jcodecollector.Loader;
 
 import jcodecollector.common.bean.Snippet;
+import jcodecollector.common.bean.Tag;
 import jcodecollector.util.GeneralInfo;
 
 import org.jdom.Document;
 import org.jdom.Element;
+import org.jdom.JDOMException;
 import org.jdom.input.SAXBuilder;
 import org.jdom.output.Format;
 import org.jdom.output.XMLOutputter;
@@ -35,7 +39,7 @@ public class PackageManager {
 
     /**
      * Esporta in XML un gruppo di snippet.
-     * 
+     *
      * @param file Il file in cui salvare gli snippet.
      * @param category La categoria degli snippet da esportare. Se
      *        <code>null</code> vengono esportati tutti gli snippet.
@@ -43,7 +47,7 @@ public class PackageManager {
      *         <code>false</code> altrimenti
      */
     public static boolean exportSnippets(File file, String category) {
-        ArrayList<Snippet> array = null;
+        List<Snippet> array = null;
 
         if (category == null) {
             array = Loader.DBMS_INSTANCE.getAllSnippets();
@@ -67,10 +71,10 @@ public class PackageManager {
             name_xml.setText(snippet.getName());
             element.addContent(name_xml);
 
-            String[] tags = snippet.getTags();
-            for (String tag : tags) {
+            List<Tag> tags = snippet.getTags();
+            for (Tag tag : tags) {
                 Element tag_xml = new Element("tag");
-                tag_xml.setText(tag);
+                tag_xml.setText(tag.getName());
                 element.addContent(tag_xml);
             }
 
@@ -99,14 +103,22 @@ public class PackageManager {
         }
     }
 
-    public static ArrayList<Snippet> readPackage(File file) {
+    /**
+     * Reads {@link Snippet}s from XML {@code file} and returns them as
+     * {@link List}.
+     * @param file
+     * @return
+     */
+    public static List<Snippet> readPackage(File file) {
         ArrayList<Snippet> array = new ArrayList<Snippet>();
-        Element root = null;
+        Element root;
 
         try {
             SAXBuilder builder = new SAXBuilder();
             root = builder.build(file).getRootElement();
-        } catch (Exception ex) {
+        } catch (IOException ex) {
+            return null;
+        } catch (JDOMException ex) {
             return null;
         }
 
@@ -124,9 +136,10 @@ public class PackageManager {
 
             @SuppressWarnings("unchecked")
             List<Element> tagElements = e.getChildren("tag");
-            String[] tags = new String[tagElements.size()];
-            for (int i = 0; i < tags.length; i++) {
-                tags[i] = tagElements.get(i).getTextTrim();
+            List<Tag> tags = new LinkedList<Tag>();
+            for (Element tagElement : tagElements) {
+                String tagName = tagElement.getTextTrim();
+                tags.add(new Tag(category, tagName));
             }
 
             // creo lo snippet

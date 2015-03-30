@@ -37,7 +37,7 @@ public class PromptTextField extends JTextField {
 		src.setState(STATE_PROMPT);
 	}
     };
-    
+
     private static final int STATE_UNDEFINED = 0;
     private static final int STATE_NORMAL = 1;
     private static final int STATE_PROMPT = 2;

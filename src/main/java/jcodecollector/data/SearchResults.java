@@ -16,7 +16,10 @@
 package jcodecollector.data;
 
 import java.util.ArrayList;
+import java.util.HashSet;
 import java.util.Iterator;
+import java.util.List;
+import java.util.Set;
 import java.util.TreeMap;
 import java.util.TreeSet;
 import jcodecollector.Loader;
@@ -24,9 +27,9 @@ import jcodecollector.Loader;
 import jcodecollector.common.bean.Snippet;
 
 public class SearchResults {
-    
+
     /** La mappa ordinata che contiene gli snippet suddivisi per categoria. */
-    private TreeMap<String, TreeSet<String>> data = null;
+    private TreeMap<String, TreeSet<Snippet>> data = null;
 
     private static SearchResults searchResults = new SearchResults();
 
@@ -35,14 +38,16 @@ public class SearchResults {
     }
 
     private SearchResults() {
-        this.data = new TreeMap<String, TreeSet<String>>();
+        this.data = new TreeMap<String, TreeSet<Snippet>>();
     }
 
-    public ArrayList<String> getSnippets(String category) {
-        ArrayList<String> names = new ArrayList<String>();
-        TreeSet<String> set = data.get(category);
+    public ArrayList<Snippet> getSnippets(String category) {
+        ArrayList<Snippet> names = new ArrayList<Snippet>();
+        TreeSet<Snippet> set = data.get(category);
         if (set != null) {
-            names.addAll(data.get(category));
+            for(Snippet snippet : data.get(category)) {
+                names.add(snippet);
+            }
         }
 
         return names;
@@ -55,31 +60,26 @@ public class SearchResults {
     /**
      * Richiede al database la cancellazione di tutti gli snippet della
      * categoria indicata trovati con l'ultima ricerca.
-     * 
+     *
      * @param category La categoria degli snippet da cancellare.
      */
-    public boolean removeCategory(String category) {
+    public void removeCategory(String category) {
         if (!data.containsKey(category)) {
-            return false;
+            return;
         }
 
-        ArrayList<String> array = getSnippets(category);
-        boolean success = Loader.DBMS_INSTANCE.removeSnippets(array);
-
-        if (success) {
-            data.remove(category);
-        }
-
-        return success;
+        ArrayList<Snippet> array = getSnippets(category);
+        Loader.DBMS_INSTANCE.removeSnippets(array);
+        data.remove(category);
     }
 
-    public boolean renameCategory(String oldName, String newName) {
+    public void renameCategory(String oldName, String newName) {
         if (!data.containsKey(oldName)) {
-            return false;
+            return;
         }
 
         // ottengo gli snippet della vecchia categoria
-        TreeSet<String> oldValue = data.get(oldName);
+        TreeSet<Snippet> oldValue = data.get(oldName);
 
         // rimuovo la vecchia categoria dalla mappa
         data.remove(oldName);
@@ -90,45 +90,43 @@ public class SearchResults {
             data.put(newName, oldValue);
         } else {
             // altrimenti le aggiungo i vecchi snippet
-            TreeSet<String> newValue = data.get(newName);
+            TreeSet<Snippet> newValue = data.get(newName);
             newValue.addAll(oldValue);
             data.put(newName, newValue);
         }
 
         // fatto questo posso chiedere al dbms di effettuare l'aggiornamento
-        return Loader.DBMS_INSTANCE.renameCategoryOf(
-                new ArrayList<String>(data.get(newName)), newName);
+        Loader.DBMS_INSTANCE.renameCategoryOf(
+                data.get(newName), newName);
     }
 
-    public boolean removeSnippet(String name) {
+    public void removeSnippet(Snippet name) {
         Iterator<String> iterator = data.keySet().iterator();
         while (iterator.hasNext()) {
             String key = iterator.next();
-            TreeSet<String> value = data.get(key);
+            TreeSet<Snippet> value = data.get(key);
             if (value.contains(name)) {
                 value.remove(name);
-                return Loader.DBMS_INSTANCE.removeSnippet(name);
+                Loader.DBMS_INSTANCE.removeSnippet(name);
             }
         }
-
-        return false;
     }
 
-    public boolean updateSnippet(Snippet oldSnippet, Snippet newSnippet) {
-        data.get(oldSnippet.getCategory()).remove(oldSnippet.getName());
+    public void updateSnippet(Snippet oldSnippet, Snippet newSnippet) {
+        data.get(oldSnippet.getCategory()).remove(oldSnippet);
 
         if (data.containsKey(newSnippet.getCategory())) {
-            data.get(newSnippet.getCategory()).add(newSnippet.getName());
+            data.get(newSnippet.getCategory()).add(newSnippet);
         } else {
-            TreeSet<String> value = new TreeSet<String>();
-            value.add(newSnippet.getName());
+            TreeSet<Snippet> value = new TreeSet<Snippet>();
+            value.add(newSnippet);
             data.put(newSnippet.getCategory(), value);
         }
 
-        return Loader.DBMS_INSTANCE.updateSnippet(oldSnippet, newSnippet);
+        Loader.DBMS_INSTANCE.updateSnippet(oldSnippet, newSnippet);
     }
 
-    public void setData(TreeMap<String, TreeSet<String>> data) {
+    public void setData(TreeMap<String, TreeSet<Snippet>> data) {
         this.data = data;
     }
 
@@ -154,14 +152,14 @@ public class SearchResults {
         data.clear();
     }
 
-    public boolean setSyntax(String newSyntax, String category, String selected) {
+    public void setSyntax(String newSyntax, String category, Snippet selected) {
         if (!data.containsKey(category)) {
-            return false;
+            return;
         }
-        
-        ArrayList<String> snippets = new ArrayList<String>(data.get(category));
+
+        Set<Snippet> snippets = data.get(category);
         snippets.remove(selected);
-        
-        return Loader.DBMS_INSTANCE.setSyntaxToSnippets(newSyntax, snippets);
+
+        Loader.DBMS_INSTANCE.setSyntaxToSnippets(newSyntax, snippets);
     }
 }

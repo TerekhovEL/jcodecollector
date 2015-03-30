@@ -60,54 +60,41 @@ public class Loader {
         // carica i settaggi dell'applicazione
         ApplicationSettingsManager.readApplicationSettings();
 
-        // controllo se e' necessario aggiornare il database in quando quello
-        // nuovo non e' compatibile con quello della versione 2.0
-        try {
-            if (DBMS_INSTANCE.databaseMustBeUpdate()) {
-                JOptionPane.showMessageDialog(null, "<html><font size=-1>jCodeCollector database <b>must be update</b>. " + "Clicking OK the operation will be performed.<br><br>"
-                        + "<b>Warning</b>: Syntaxes from previous version are not compatible and will be removed.<br>" + "For this reason all snippets will be set to \"no syntax\". I'm sorry.<br>"
-                        + "You can quickly fix your snippets right-clicking on a category and choosing " + "<i>Set Syntax->syntax</i></font></html>", "jCodeCollector - Migration Assistant", JOptionPane.INFORMATION_MESSAGE);
-
-                if (!DBMS_INSTANCE.updateDatabase()) {
-                    System.err.println("error updating database");
-                    System.exit(1);
-                }
-            }
-        } catch(ConnectionException ex) {
-            String message = "Cannot start jCodeCollector because an error occurred.";
-            String text = String.format("<html><b>%s (%s)</b><br><br><font size=-1>", message, ex.getMessage());
-            logger.debug(message, ex);
-            if (message.contains("not found")) {
-                text += "JCODECOLLECTOR_DB folder cannot be found in <i>"
-                        + ApplicationSettings.getInstance().getDatabasePath()
-                        + "jCodeCollector</i>";
-            } else {
-                text += "Only one client at time can access to the database.";
-            }
-            text += "</font></html>";
-
-            JOptionPane.showMessageDialog(null, text, "", JOptionPane.ERROR_MESSAGE);
-            System.exit(3);
-        } catch(DirectoryCreationException ex) {
-            displayErrorMessageDialog(ex.getMessage());
-            System.exit(2);
-        }
-
         SwingUtilities.invokeLater(new Runnable() {
             public void run() {
-                MainFrame mainFrame = new MainFrame();
-                mainFrame.setVisible(true);
+                try {
+                    MainFrame mainFrame = new MainFrame();
+                    mainFrame.setVisible(true);
 
-                if (OS.isMacOSX()) {
-                    // forzo il ridisegno dell'interfaccia: e' un piccolo fix
-                    // per il problema della bottom bar che appare del colore
-                    // sbagliato
-                    mainFrame.repaint();
+                    if (OS.isMacOSX()) {
+                        // forzo il ridisegno dell'interfaccia: e' un piccolo fix
+                        // per il problema della bottom bar che appare del colore
+                        // sbagliato
+                        mainFrame.repaint();
+                    }
+
+                    // carico il source list con gli snippet
+                    mainFrame.reloadSourceList();
+                    mainFrame.restoreSelectedSnippet();
+                } catch(ConnectionException ex) {
+                    String message = "Cannot start jCodeCollector because an error occurred.";
+                    String text = String.format("<html><b>%s (%s)</b><br><br><font size=-1>", message, ex.getMessage());
+                    logger.debug(message, ex);
+                    if (message.contains("not found")) {
+                        text += "JCODECOLLECTOR_DB folder cannot be found in <i>"
+                                + ApplicationSettings.getInstance().getDatabasePath()
+                                + "jCodeCollector</i>";
+                    } else {
+                        text += "Only one client at time can access to the database.";
+                    }
+                    text += "</font></html>";
+
+                    JOptionPane.showMessageDialog(null, text, "", JOptionPane.ERROR_MESSAGE);
+                    System.exit(3);
+                } catch(DirectoryCreationException ex) {
+                    displayErrorMessageDialog(ex.getMessage());
+                    System.exit(2);
                 }
-
-                // carico il source list con gli snippet
-                mainFrame.reloadSourceList();
-                mainFrame.restoreSelectedSnippet();
             }
         });
     }

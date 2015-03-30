@@ -28,7 +28,7 @@ import jcodecollector.State;
 /**
  * Validatore di componenti di testo come {@link JTextArea}, {@link JTextField},
  * {@link JTextPane}, {@link JEditorPane} ecc.
- * 
+ *
  * @author Alessandro Cocco
  */
 public class EditorValidator implements DocumentListener {
@@ -45,10 +45,12 @@ public class EditorValidator implements DocumentListener {
      */
     private boolean running;
 
+    private final State state = State.getInstance();
+
     /**
      * Costruisce il validatore dei componenti indicati. Il secondo parametro
      * indica se ci sono componenti opzionali.
-     * 
+     *
      * @param components I componenti ({@link JTextArea}, {@link JTextField},
      *        {@link JEditorPane} ecc. da validare.
      * @param optional Un array della stessa dimensione del precedente. In ogni
@@ -86,7 +88,7 @@ public class EditorValidator implements DocumentListener {
             State.getInstance().updateWindowStatus(true);
         }
 
-        State.getInstance().updateSnippetStatus(false, false, false);
+        State.getInstance().updateSnippetStatus(state.getCurrentSnippet(), false, false, false);
         boolean validated = true;
         for (int i = 0; i < components.length; i++) {
             if (optional[i]) {
@@ -95,7 +97,7 @@ public class EditorValidator implements DocumentListener {
 
             validated &= components[i].getText().trim().length() > 0;
         }
-        State.getInstance().updateSnippetStatus(validated, false, false);
+        State.getInstance().updateSnippetStatus(state.getCurrentSnippet(), validated, false, false);
         State.getInstance().updateMenu(true, false);
     }
 

@@ -15,16 +15,26 @@
  */
 package jcodecollector.common.bean;
 
+import java.io.Serializable;
+import javax.persistence.Entity;
+import javax.persistence.Id;
+
 /**
  * @author andbin
  */
-public class Tag implements Comparable<Tag> {
+@Entity
+public class Tag implements Comparable<Tag>, Serializable {
+    private static final long serialVersionUID = 1L;
+
+    @Id
+    private String name;
 
     private String category;
 
-    private String name;
-
     private boolean selected;
+
+    protected Tag() {
+    }
 
     public Tag(String category, String name, boolean selected) {
         this.category = category;
@@ -52,6 +62,7 @@ public class Tag implements Comparable<Tag> {
         this.selected = selected;
     }
 
+    @Override
     public int compareTo(Tag o) {
         int categories = category.compareToIgnoreCase(o.category);
         int names = name.compareToIgnoreCase(o.name);
@@ -83,5 +94,13 @@ public class Tag implements Comparable<Tag> {
             return false;
         }
         return true;
+    }
+
+    @Override
+    public int hashCode() {
+        int hash = 5;
+        hash = 79 * hash + (this.name != null ? this.name.hashCode() : 0);
+        hash = 79 * hash + (this.category != null ? this.category.hashCode() : 0);
+        return hash;
     }
 }

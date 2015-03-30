@@ -22,7 +22,7 @@ import javax.swing.text.PlainDocument;
 /**
  * Sotto classe di <code>PlainDocument</code>, permette di specificare il numero
  * massimo di caratteri accettati dal documento.
- * 
+ *
  * @author Alessandro Cocco me@alessandrococco.com
  */
 public class LimitedPlainDocument extends PlainDocument {
@@ -34,7 +34,7 @@ public class LimitedPlainDocument extends PlainDocument {
     /**
      * Crea un <code>LimitedPlainDocument</code> che permette di inserire al
      * massimo <code>maxSize</code> caratteri.
-     * 
+     *
      * @param maxSize Il massimo numero di caratteri che possono essere inseriti
      *        nel documento.
      */

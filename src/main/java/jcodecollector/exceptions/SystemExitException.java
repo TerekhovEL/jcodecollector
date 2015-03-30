@@ -25,5 +25,5 @@ public class SystemExitException extends ExceptionInInitializerError {
         super();
         System.exit(exitCode);
     }
-    
+
 }

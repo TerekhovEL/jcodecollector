@@ -18,13 +18,13 @@ package jcodecollector.util;
 /**
  * Classe di utilita', permette di capire su che sistema operativo e' in
  * esecuzione il programma.
- * 
+ *
  * @author Alessandro Cocco
  */
 public class OS {
     /**
      * Indica se il programma e' in esecuzione su Mac OS X.
-     * 
+     *
      * @return <code>true</code> se il programma e' in esecuzione su Mac OS X,
      *         <code>false</code> altrimenti
      */
@@ -34,7 +34,7 @@ public class OS {
 
     /**
      * Indica se il programma e' in esecuzione su Windows.
-     * 
+     *
      * @return <code>true</code> se il programma e' in esecuzione su Windows,
      *         <code>false</code> altrimenti
      */

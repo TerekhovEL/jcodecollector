@@ -17,7 +17,7 @@ package jcodecollector.util;
 
 /**
  * Funzioni di utilita' varia.
- * 
+ *
  * @author Alessandro Cocco
  */
 public class Utility {
@@ -30,7 +30,7 @@ public class Utility {
 
     /**
      * Verifica se il nome indicato e' valido.
-     * 
+     *
      * @param name Il nome da controllare.
      * @return <code>true</code> se il nome e' valido, <code>false</code>
      *         altrimenti

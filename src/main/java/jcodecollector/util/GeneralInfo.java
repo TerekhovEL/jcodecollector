@@ -17,7 +17,7 @@ package jcodecollector.util;
 
 /**
  * General informations about the application.
- * 
+ *
  * @author Alessandro Cocco
  */
 public class GeneralInfo {

@@ -23,7 +23,7 @@ import java.io.File;
  */
 public class DirectoryCreationException extends RuntimeException {
     private static final long serialVersionUID = 1L;
-    
+
     public DirectoryCreationException(File directory) {
         super(createMessage(directory));
     }
@@ -35,7 +35,7 @@ public class DirectoryCreationException extends RuntimeException {
     public DirectoryCreationException(File directory, Throwable cause) {
         super(createMessage(directory), cause);
     }
-    
+
     private static String createMessage(File directory) {
         return String.format("An error occurred while preparing database folder %s.", directory.getAbsolutePath());
     }

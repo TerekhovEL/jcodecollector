@@ -23,14 +23,14 @@ import jcodecollector.common.bean.Snippet;
 public interface SnippetListener {
     /**
      * Invocato quando lo snippet indicato viene modificato.
-     * 
+     *
      * @param snippet Lo snippet che e' stato modificato.
      */
     public void snippetEdited(Snippet snippet);
 
     /**
      * Invocato quando uno snippet viene rinominato.
-     * 
+     *
      * @param oldName Il vecchio nome dello snippet.
      * @param newName Il nuovo nome dello snippet.
      */
@@ -38,19 +38,20 @@ public interface SnippetListener {
 
     /**
      * Invocato quando uno snippet viene rimosso.
-     * 
+     *
      * @param snippet Lo snippet rimosso.
      */
     public void snippetRemoved(Snippet snippet);
 
     /**
      * Invocato quando lo stato di uno snippet cambia.
-     * 
+     *
+     * @param snippet the {@link Snippet} on which to perform the operation
      * @param validated
      * @param saved
      * @param locked
      */
-    public void updateSnippetStatus(boolean validated, boolean saved, boolean locked);
+    public void updateSnippetStatus(Snippet snippet, boolean validated, boolean saved, boolean locked);
 
     public void syntaxRenamed(String newName, String category);
 }

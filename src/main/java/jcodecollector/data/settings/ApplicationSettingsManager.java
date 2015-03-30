@@ -22,6 +22,8 @@ import java.io.FileReader;
 import java.io.FileWriter;
 import java.io.IOException;
 import java.util.Properties;
+import jcodecollector.Loader;
+import jcodecollector.common.bean.Snippet;
 
 import jcodecollector.util.GeneralInfo;
 
@@ -31,7 +33,7 @@ public class ApplicationSettingsManager {
 		readApplicationSettings(new File(ApplicationSettings.PREFERENCES_PATH_DEFAULT));
 	}
 
-	public static void saveApplicationSettings() { 
+	public static void saveApplicationSettings() {
 		saveApplicationSettings(new File(ApplicationSettings.PREFERENCES_PATH_DEFAULT));
 	}
 
@@ -49,7 +51,13 @@ public class ApplicationSettingsManager {
 		settings.setDatabasePath(properties.getProperty("database_path", ApplicationSettings.DATABASE_PATH_DEFAULT));
 
 		// recupero lo snippet selezionato
-		settings.setSelectedSnippet(properties.getProperty("selected_snippet", "null"));
+                String selectedSnippetName = properties.getProperty("selected_snippet", null);
+                if(selectedSnippetName != null) {
+                    Snippet selectedSnippet = Loader.DBMS_INSTANCE.getSnippet(selectedSnippetName);
+                    if (selectedSnippet != null) {
+                        settings.setSelectedSnippet(selectedSnippet);
+                    }
+                }
 
 		// recupero le dimensioni della finestra
 		String windowWidth = properties.getProperty("window_width", "" + ApplicationSettings.DEFAULT_WINDOW_SIZE.width);
@@ -85,7 +93,7 @@ public class ApplicationSettingsManager {
 			settings.setEditorWidth(ApplicationSettings.DEFAULT_EDITOR_PANEL_WIDTH);
 		}
 
-		// recupero i vari valori booleani 
+		// recupero i vari valori booleani
 		settings.setSearchInNameEnabled(Boolean.parseBoolean(properties.getProperty("search_name", "true")));
 		settings.setSearchInTagsEnabled(Boolean.parseBoolean(properties.getProperty("search_tags", "true")));
 		settings.setSearchInCodeEnabled(Boolean.parseBoolean(properties.getProperty("search_code", "true")));

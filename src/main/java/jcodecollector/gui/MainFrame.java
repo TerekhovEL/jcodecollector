@@ -96,11 +96,14 @@ import com.explodingpixels.macwidgets.SourceListModelListener;
 import com.explodingpixels.macwidgets.SourceListSelectionListener;
 import com.explodingpixels.macwidgets.UnifiedToolBar;
 import java.awt.Window;
+import java.util.Comparator;
 import jcodecollector.Loader;
+import jcodecollector.service.DefaultIdGenerator;
+import jcodecollector.service.IdGenerator;
 
 /**
  * La finestra principale dell'applicazione.
- * 
+ *
  * @author Alessandro Cocco *
  */
 public class MainFrame extends JFrame implements CountListener, SnippetListener, CategoryListener, WindowListener, SearchListener, MenuListener {
@@ -112,7 +115,7 @@ public class MainFrame extends JFrame implements CountListener, SnippetListener,
     private JSplitPane split = new JSplitPane();
 
     /** Il pannello contenente l'editor degli snippet. */
-    public MyDialog mainPanel = new MyDialog(this);
+    public MainPanel mainPanel = new MainPanel(this);
 
     /** L'etichetta con le statistiche sul database. */
     private JLabel statusLabel;
@@ -139,6 +142,8 @@ public class MainFrame extends JFrame implements CountListener, SnippetListener,
     private State state = State.getInstance();
 
     private JPanel sourcePanel;
+
+    private final IdGenerator idGenerator = new DefaultIdGenerator();
 
     public MainFrame() {
         setTitle(GeneralInfo.APPLICATION_NAME);
@@ -290,7 +295,7 @@ public class MainFrame extends JFrame implements CountListener, SnippetListener,
      * dell'applicazione
      */
     public void restoreSelectedSnippet() {
-        String selectedSnippet = ApplicationSettings.getInstance().getSelectedSnippet();
+        Snippet selectedSnippet = ApplicationSettings.getInstance().getSelectedSnippet();
         if (selectedSnippet != null) {
             manuallySelectItem(selectedSnippet);
         }
@@ -323,15 +328,14 @@ public class MainFrame extends JFrame implements CountListener, SnippetListener,
                     final JMenuItem item = new JMenuItem(s);
                     item.addActionListener(new ActionListener() {
                         public void actionPerformed(ActionEvent e) {
-                            if (controller.updateSyntax(item.getText(), CATEGORY_POPUP_MANAGER_ACTION.getText(), !state.isSnippetSaved() ? state.getNameOfSelectedSnippet() : null)) {
-                                state.syntaxRenamed(item.getText(), CATEGORY_POPUP_MANAGER_ACTION.getText());
-                            }
+                            controller.updateSyntax(item.getText(), CATEGORY_POPUP_MANAGER_ACTION.getText(), !state.isSnippetSaved() ? state.getSelectedSnippet() : null);
+                            state.syntaxRenamed(item.getText(), CATEGORY_POPUP_MANAGER_ACTION.getText());
                         }
                     });
                     syntaxItem.add(item);
                 }
 
-                ArrayList<String> categories = controller.getAllCategories();
+                List<String> categories = controller.getAllCategories();
                 categories.remove(category.getText());
 
                 JPopupMenu adapter = new JPopupMenu();
@@ -369,7 +373,7 @@ public class MainFrame extends JFrame implements CountListener, SnippetListener,
                 JMenuItem newCategoryItem = new JMenuItem(ITEM_POPUP_MANAGER_ACTION);
                 newCategoryItem.setText("New Category...");
 
-                ArrayList<String> categories = controller.getAllCategories();
+                List<String> categories = controller.getAllCategories();
                 categories.remove(controller.getCategoryOf(item.getText()));
 
                 moveItem.add(newCategoryItem);
@@ -401,9 +405,9 @@ public class MainFrame extends JFrame implements CountListener, SnippetListener,
             public void sourceListItemSelected(SourceListItem item) {
                 if (item == null) {
                     state.setNameOfSelectedCategory(null);
-                    state.setNameOfSelectedSnippet(null);
+                    state.setSelectedSnippet(null);
                     state.setPreviousSnippet(null);
-                    state.updateSnippetStatus(false, false, false);
+                    state.updateSnippetStatus(state.getCurrentSnippet(), false, false, false);
 
                     mainPanel.clear();
                 } else {
@@ -413,7 +417,7 @@ public class MainFrame extends JFrame implements CountListener, SnippetListener,
                     // lo imposto come lo snippet di lavoro
                     state.setPreviousSnippet(snippet);
                     state.setNameOfSelectedCategory(snippet.getCategory());
-                    state.setNameOfSelectedSnippet(snippet.getName());
+                    state.setSelectedSnippet(snippet);
 
                     // aggiorno l'editor
                     mainPanel.setSnippet(snippet);
@@ -422,7 +426,7 @@ public class MainFrame extends JFrame implements CountListener, SnippetListener,
                     // usando le frecce direzionali
                     sourceList.scrollItemToVisible(item);
 
-                    state.updateSnippetStatus(true, true, snippet.isLocked());
+                    state.updateSnippetStatus(state.getCurrentSnippet(), true, true, snippet.isLocked());
                     state.updateMenu(true, false);
                     state.updateWindowStatus(false);
 
@@ -552,7 +556,7 @@ public class MainFrame extends JFrame implements CountListener, SnippetListener,
 
         turnOffButton = new JButton("Clear");
         turnOffButton.addActionListener(CANCEL_BUTTON_SEARCH_ACTION);
-        turnOffButton.setPreferredSize(new Dimension(mainPanel.saveButton.getPreferredSize().width + 10, turnOffButton.getPreferredSize().height));
+        turnOffButton.setPreferredSize(new Dimension(mainPanel.getSaveButton().getPreferredSize().width + 10, turnOffButton.getPreferredSize().height));
 
         hideButton = new JButton("Hide");
         hideButton.addActionListener(HIDE_SEARCH_PANEL_ACTION);
@@ -564,9 +568,9 @@ public class MainFrame extends JFrame implements CountListener, SnippetListener,
         ApplicationSettings.getInstance().setWindowLocation(getLocation());
         ApplicationSettings.getInstance().setSourceListWidth(split.getDividerLocation());
         // ApplicationSettings.getInstance().setEditorWidth(mainPanel.split.getDividerLocation());
-        ApplicationSettings.getInstance().setLineNumbersEnabled(mainPanel.scrollPanel.getLineNumbersEnabled());
+        ApplicationSettings.getInstance().setLineNumbersEnabled(mainPanel.getScrollPanel().getLineNumbersEnabled());
         ApplicationSettings.getInstance().setCommentPanelVisible(showCommentPanelMenuItem.isSelected());
-        ApplicationSettings.getInstance().setSelectedSnippet(state.getNameOfSelectedSnippet());
+        ApplicationSettings.getInstance().setSelectedSnippet(state.getSelectedSnippet());
         ApplicationSettings.getInstance().setAutoHideCommentEnabled(autoHideCommentPanelMenuItem.isSelected());
 
         ApplicationSettingsManager.saveApplicationSettings();
@@ -579,7 +583,8 @@ public class MainFrame extends JFrame implements CountListener, SnippetListener,
             mainPanel.createNewSnippet();
 
             state.setPreviousSnippet(null);
-            state.updateSnippetStatus(false, false, false);
+            state.setCurrentSnippet(new Snippet(idGenerator.getNextId()));
+            state.updateSnippetStatus(state.getCurrentSnippet(), false, false, false);
 
             state.updateWindowStatus(true);
             showCommentPanel();
@@ -593,7 +598,7 @@ public class MainFrame extends JFrame implements CountListener, SnippetListener,
             mainPanel.pasteFromClipboard();
 
             state.setPreviousSnippet(null);
-            state.updateSnippetStatus(false, false, false);
+            state.updateSnippetStatus(state.getCurrentSnippet(), false, false, false);
 
             state.updateWindowStatus(true);
             showCommentPanel();
@@ -616,15 +621,14 @@ public class MainFrame extends JFrame implements CountListener, SnippetListener,
             }
 
             // rimuovo lo snippet
-            if (controller.removeSnippet(name)) {
-                actionsAfterRemovingSnippet(snippet);
-            }
+            controller.removeSnippet(snippet);
+            actionsAfterRemovingSnippet(snippet);
         }
     };
 
     private void actionsAfterRemovingSnippet(Snippet snippet) {
         state.snippetRemoved(snippet);
-        state.updateSnippetStatus(false, false, false);
+        state.updateSnippetStatus(state.getCurrentSnippet(), false, false, false);
         state.updateWindowStatus(false);
         state.updateMenu(true, true);
     }
@@ -637,14 +641,14 @@ public class MainFrame extends JFrame implements CountListener, SnippetListener,
 
     final ActionListener LOCK_SNIPPET_ACTION = new ActionListener() {
         public void actionPerformed(ActionEvent e) {
-            mainPanel.lockButton.doClick();
+            mainPanel.getLockButton().doClick();
         }
     };
 
     /** Effettua il salvataggio dello snippet corrente. */
     final ActionListener SAVE_SNIPPET_ACTION = new ActionListener() {
         public void actionPerformed(ActionEvent e) {
-            Snippet newSnippet = mainPanel.getSnippet();
+            Snippet newSnippet = state.getCurrentSnippet();
             Snippet oldSnippet = state.getPreviousSnippet();
 
             if (newSnippet == null) {
@@ -654,24 +658,14 @@ public class MainFrame extends JFrame implements CountListener, SnippetListener,
 
             // lo snippet precedente e' null: si tratta di un nuovo inserimento
             if (oldSnippet == null) {
-                if (controller.insertNewSnippet(newSnippet)) {
-                    insertSnippet(newSnippet);
-                } else {
-                    error(newSnippet.getName());
-                    return;
-                }
+                controller.insertNewSnippet(newSnippet);
             } else {
                 // se le modifiche vengono effettuate correttamente aggiorno
                 // anche il SourceList
-                if (controller.updateSnippet(oldSnippet, newSnippet)) {
-                    updateSnippetInSourceList(oldSnippet, newSnippet);
-                } else {
-                    error(newSnippet.getName());
-                    return;
-                }
+                controller.updateSnippet(oldSnippet, newSnippet);
             }
 
-            state.updateSnippetStatus(true, true, false);
+            state.updateSnippetStatus(state.getCurrentSnippet(), true, true, false);
             state.updateWindowStatus(false);
             state.updateMenu(true, true);
 
@@ -680,7 +674,7 @@ public class MainFrame extends JFrame implements CountListener, SnippetListener,
 
         /**
          * Visualizza un messaggio di errore.
-         * 
+         *
          * @param name Lo snippet che ha causato l'errore.
          */
         private void error(String name) {
@@ -762,7 +756,7 @@ public class MainFrame extends JFrame implements CountListener, SnippetListener,
             state.startSearch();
 
             // risultato della ricerca
-            TreeMap<String, TreeSet<String>> data = Loader.DBMS_INSTANCE.search(keywords, controller.getValue());
+            TreeMap<String, TreeSet<Snippet>> data = Loader.DBMS_INSTANCE.search(keywords, controller.getValue());
             controller.setData(data);
 
             // la ricerca non ha dato risultati: emetto un effetto
@@ -882,26 +876,15 @@ public class MainFrame extends JFrame implements CountListener, SnippetListener,
             // faccio una copia del database nella nuova posizione: se va tutto
             // ok reimposto la connessione verso il nuovo database, cancello
             // quello vecchio
-            if (Loader.DBMS_INSTANCE.copyDatabase(newLocation.getAbsolutePath())) {
-                if (Loader.DBMS_INSTANCE.resetConnection()) {
-                    if (!FileManager.deleteDirectory(oldLocation)) {
-                        JOptionPane.showMessageDialog(MainFrame.this, "<html><b>An error occured while moving the database</b>.<br><br>"
-                                + "All your data has been copied successfully in the new location but the old database folder cannot be removed.<br>" + "You should manually remove the folder <b>" + oldLocation.getAbsolutePath() + "</b>.</html>", "",
-                                JOptionPane.WARNING_MESSAGE);
-                    }
-
-                    if (!OS.isMacOSX()) {
-                        setTitle(GeneralInfo.APPLICATION_NAME + " - " + ApplicationSettings.getInstance().getDatabasePath());
-                    }
-                }
-            }
+            JOptionPane.showMessageDialog(MainFrame.this, String.format("Copying the database is no longer supported. Move the directory '%s' and adjust the connection settings", oldLocation.getAbsolutePath()), "",
+                        JOptionPane.WARNING_MESSAGE);
         }
     };
 
     /**
      * Inserisce nel SourceList un nuovo elemento rappresentante lo snippet
      * appena inserito nel database.
-     * 
+     *
      * @param newSnippet Lo snippet appena inserito nel database.
      */
     private void insertSnippet(Snippet newSnippet) {
@@ -924,7 +907,7 @@ public class MainFrame extends JFrame implements CountListener, SnippetListener,
 
     /**
      * Rimuove dal SourceList lo snippet indicato.
-     * 
+     *
      * @param snippet Lo snippet da rimuovere.
      */
     private void removeSnippetFromSourceList(Snippet snippet) {
@@ -948,7 +931,7 @@ public class MainFrame extends JFrame implements CountListener, SnippetListener,
     /**
      * Aggiorna lo snippet spostandolo da una categoria all'altra del
      * SourceList.
-     * 
+     *
      * @param oldSnippet Lo snippet modificato.
      * @param newSnippet Lo snippet privo di modifiche.
      */
@@ -1005,7 +988,7 @@ public class MainFrame extends JFrame implements CountListener, SnippetListener,
      * rinomina in loco altrimenti vengono spostati tutti gli snippet della
      * vecchia in quella nuova (gia' esistente) e si cancella quella di
      * partenza.
-     * 
+     *
      * @param sourceName Il nome di partenza.
      * @param destinationName Il nome di destinazione.
      */
@@ -1043,7 +1026,7 @@ public class MainFrame extends JFrame implements CountListener, SnippetListener,
     /**
      * Rimuove la categoria indicata dal SourceList. Il database non viene
      * toccato.
-     * 
+     *
      * @param name Il nome della categoria da rimuovere dal SourceList.
      */
     private void removeCategoryFromSourceList(String name) {
@@ -1080,9 +1063,8 @@ public class MainFrame extends JFrame implements CountListener, SnippetListener,
 
                 // rimuove lo snippet dal database e chiama in cascata i vari
                 // listener interessati all'evento
-                if (controller.removeSnippet(text)) {
-                    actionsAfterRemovingSnippet(snippet);
-                }
+                controller.removeSnippet(snippet);
+                actionsAfterRemovingSnippet(snippet);
 
                 return;
             }
@@ -1123,21 +1105,14 @@ public class MainFrame extends JFrame implements CountListener, SnippetListener,
 
             Snippet newSnippet;
 
-            try {
-                newSnippet = (Snippet) oldSnippet.clone();
-            } catch (CloneNotSupportedException ex) {
-                ex.printStackTrace();
-                return;
-            }
-
+            newSnippet = new Snippet(oldSnippet);
             newSnippet.setCategory(category);
 
-            if (controller.updateSnippet(oldSnippet, newSnippet)) {
-                boolean locked = state.isSnippetLocked();
-                updateSnippetInSourceList(oldSnippet, newSnippet);
-                state.updateSnippetStatus(true, true, locked);
-                state.updateMenu(true, true);
-            }
+            controller.updateSnippet(oldSnippet, newSnippet);
+            boolean locked = state.isSnippetLocked();
+            updateSnippetInSourceList(oldSnippet, newSnippet);
+            state.updateSnippetStatus(State.getInstance().getCurrentSnippet(), true, true, locked);
+            state.updateMenu(true, true);
         }
     };
 
@@ -1161,11 +1136,10 @@ public class MainFrame extends JFrame implements CountListener, SnippetListener,
             if (menuItemClicked.equals("Remove")) {
                 // Rimuovo dal database la categoria e tutti i suoi snippet. In
                 // caso di successo rimuovo la categoria anche dal SourceList.
-                if (controller.removeCategory(text)) {
-                    state.categoryRemoved(text);
-                    state.updateSnippetStatus(state.isSnippetValidated(), state.isSnippetSaved(), state.isSnippetLocked());
-                    state.updateMenu(true, true);
-                }
+                controller.removeCategory(text);
+                state.categoryRemoved(text);
+                state.updateSnippetStatus(state.getSelectedSnippet(), state.isSnippetValidated(), state.isSnippetSaved(), state.isSnippetLocked());
+                state.updateMenu(true, true);
 
                 // restituisce subito il controllo
                 return;
@@ -1191,9 +1165,8 @@ public class MainFrame extends JFrame implements CountListener, SnippetListener,
                     newSyntax = "";
                 }
 
-                if (controller.updateSyntax(newSyntax, text, !state.isSnippetSaved() ? state.getNameOfSelectedSnippet() : null)) {
-                    state.syntaxRenamed(newSyntax, text);
-                }
+                controller.updateSyntax(newSyntax, text, !state.isSnippetSaved() ? state.getSelectedSnippet() : null);
+                state.syntaxRenamed(newSyntax, text);
 
                 // restituisce subito il controllo
                 return;
@@ -1223,12 +1196,11 @@ public class MainFrame extends JFrame implements CountListener, SnippetListener,
 
             // dopo aver ottenuto il nuovo nome e verificato se e' valido
             // aggiorno il database e il SourceList
-            if (controller.renameCategory(text, newName)) {
-                state.categoryRenamed(text, newName);
-                state.updateSnippetStatus(false, false, false);
-                state.updateWindowStatus(false);
-                state.updateMenu(true, true);
-            }
+            controller.renameCategory(text, newName);
+            state.categoryRenamed(text, newName);
+            state.updateSnippetStatus(state.getCurrentSnippet(), false, false, false);
+            state.updateWindowStatus(false);
+            state.updateMenu(true, true);
         }
     };
 
@@ -1282,7 +1254,7 @@ public class MainFrame extends JFrame implements CountListener, SnippetListener,
         }
 
         // leggo il contenuto del file indicato dall'utente
-        ArrayList<Snippet> snippets = PackageManager.readPackage(path);
+        List<Snippet> snippets = PackageManager.readPackage(path);
 
         if (snippets == null) {
             JOptionPane.showMessageDialog(MainFrame.this, "The selected file is not valid.", "Error!", JOptionPane.ERROR_MESSAGE, null);
@@ -1373,13 +1345,22 @@ public class MainFrame extends JFrame implements CountListener, SnippetListener,
         }
     }
 
+    private final static class SnippetCategoryComparator implements Comparator<Snippet> {
+
+        @Override
+        public int compare(Snippet o1, Snippet o2) {
+            return o1.getCategory().compareTo(o2.getCategory());
+        }
+    }
+    private final static SnippetCategoryComparator SNIPPET_CATEGORY_COMPARATOR = new SnippetCategoryComparator();
+
     /** Legge il contenuto del database e popola il {@link SourceList}. */
     public void reloadSourceList() {
         // svuoto il SourceList
         resetSourceList();
 
         // ottengo l'elenco delle categorie
-        ArrayList<String> categories = controller.getCategories();
+        List<String> categories = controller.getCategories();
 
         for (String category : categories) {
             /* Il nome di una categoria e' case-insensitive: verifico se la
@@ -1392,11 +1373,11 @@ public class MainFrame extends JFrame implements CountListener, SnippetListener,
             }
 
             // ottengo l'elenco degli snippet e lo ordino alfabeticamente
-            ArrayList<String> snippets = controller.getSnippetsName(category);
-            Collections.sort(snippets);
+            List<Snippet> snippets = controller.getSnippetsName(category);
+            snippets.sort(SNIPPET_CATEGORY_COMPARATOR);
 
-            for (String snippet : snippets) {
-                SourceListItem snippetItem = new SourceListItem(snippet);
+            for (Snippet snippet : snippets) {
+                SourceListItem snippetItem = new SourceListItem(snippet.getCategory());
                 sourceList.getModel().addItemToCategory(snippetItem, categoryItem);
             }
         }
@@ -1407,7 +1388,7 @@ public class MainFrame extends JFrame implements CountListener, SnippetListener,
     /**
      * Restituisce il {@link SourceListCategory} relativo alla categoria
      * indicata.
-     * 
+     *
      * @param category La categoria di cui si vuole ottenere il
      *        {@link SourceListCategory}.
      * @return il {@link SourceListCategory} della categoria indicata (se
@@ -1433,7 +1414,7 @@ public class MainFrame extends JFrame implements CountListener, SnippetListener,
     /**
      * Permette di ottenere il <code>SourceListItem</code> relativo allo snippet
      * indicato.
-     * 
+     *
      * @param snippet Lo snippet della categoria di cui si vuole ottenere il
      *        <code>SourceListItem</code>.
      * @return il <code>SourceListItem</code> dello snippet indicato (se
@@ -1489,7 +1470,7 @@ public class MainFrame extends JFrame implements CountListener, SnippetListener,
      * Rimuove dal SourceList il nodo che rappresenta lo snippet indicato.
      * Questo metodo viene chiamato <b>dopo</b> che il corrispondente snippet e'
      * stato rimosso dal database.
-     * 
+     *
      * @param snippet Lo snippet rimosso.
      */
     public void snippetRemoved(Snippet snippet) {
@@ -1505,12 +1486,12 @@ public class MainFrame extends JFrame implements CountListener, SnippetListener,
     public void syntaxUpdated(ArrayList<Syntax> syntaxes) {
     }
 
-    public void updateSnippetStatus(boolean validated, boolean saved, boolean locked) {
+    public void updateSnippetStatus(Snippet snippet, boolean validated, boolean saved, boolean locked) {
     }
 
     /**
      * Update window status.
-     * 
+     *
      * @param documentModified <code>true</code> if there are snippets unsaved,
      *        <code>false</code> otherwise.
      */
@@ -1569,7 +1550,8 @@ public class MainFrame extends JFrame implements CountListener, SnippetListener,
             reloadSourceList();
 
             if (oldStatus && !newStatus) {
-                manuallySelectItem(selected);
+                Snippet selectedSnippet = Loader.DBMS_INSTANCE.getSnippet(selected);
+                manuallySelectItem(selectedSnippet);
             }
         }
     }
@@ -1579,16 +1561,16 @@ public class MainFrame extends JFrame implements CountListener, SnippetListener,
 
     /**
      * Seleziona il {@link SourceListItem} che contiene il testo indicato.
-     * 
+     *
      * @param text Il testo contenuto nel {@link SourceListItem} da selezionare.
      */
-    private void manuallySelectItem(String text) {
+    private void manuallySelectItem(Snippet text) {
         Iterator<SourceListCategory> iterator = sourceList.getModel().getCategories().iterator();
         while (iterator.hasNext()) {
             Iterator<SourceListItem> innerIterator = iterator.next().getItems().iterator();
             while (innerIterator.hasNext()) {
-                SourceListItem item;
-                if ((item = innerIterator.next()).getText().equals(text)) {
+                SourceListItem item = innerIterator.next();
+                if (item.getText().equals(text)) {
                     sourceList.setSelectedItem(item);
                     sourceList.scrollItemToVisible(item);
                     return;
@@ -1713,7 +1695,7 @@ public class MainFrame extends JFrame implements CountListener, SnippetListener,
         showLineNumbersMenuItem.setAccelerator(KeyStroke.getKeyStroke(KeyEvent.VK_E, MENU_SHORTCUT_KEY_MASK | InputEvent.SHIFT_DOWN_MASK));
         showLineNumbersMenuItem.addActionListener(new ActionListener() {
             public void actionPerformed(ActionEvent e) {
-                mainPanel.scrollPanel.setLineNumbersEnabled(showLineNumbersMenuItem.isSelected());
+                mainPanel.getScrollPanel().setLineNumbersEnabled(showLineNumbersMenuItem.isSelected());
             }
         });
         if (ApplicationSettings.getInstance().isLineNumbersEnabled()) {
@@ -1727,13 +1709,13 @@ public class MainFrame extends JFrame implements CountListener, SnippetListener,
             public void actionPerformed(ActionEvent e) {
                 if (showCommentPanelMenuItem.isSelected()) {
                     // mainPanel.arrowDownSplitButton.doClick();
-                    mainPanel.add(mainPanel.southPanel, BorderLayout.SOUTH);
-                    mainPanel.mainPanel.setBorder(new EmptyBorder(5, 10, 3, 5));
-                    mainPanel.southPanel.setBorder(new EmptyBorder(0, 10, 7, OS.isMacOSX() ? 7 : 5));
+                    mainPanel.add(mainPanel.getSouthPanel(), BorderLayout.SOUTH);
+                    mainPanel.getMainPanel().setBorder(new EmptyBorder(5, 10, 3, 5));
+                    mainPanel.getSouthPanel().setBorder(new EmptyBorder(0, 10, 7, OS.isMacOSX() ? 7 : 5));
                 } else {
-                    if (mainPanel.southPanel.getParent() != null) {
-                        mainPanel.remove(mainPanel.southPanel);
-                        mainPanel.mainPanel.setBorder(new EmptyBorder(5, 10, OS.isMacOSX() ? 5 : 7, 5));
+                    if (mainPanel.getSouthPanel().getParent() != null) {
+                        mainPanel.remove(mainPanel.getSouthPanel());
+                        mainPanel.getMainPanel().setBorder(new EmptyBorder(5, 10, OS.isMacOSX() ? 5 : 7, 5));
                     }
                     // mainPanel.arrowUpSplitButton.doClick();
                 }
@@ -1742,9 +1724,9 @@ public class MainFrame extends JFrame implements CountListener, SnippetListener,
         });
 
         if (showCommentPanelMenuItem.isSelected()) {
-            mainPanel.add(mainPanel.southPanel, BorderLayout.SOUTH);
-            mainPanel.mainPanel.setBorder(new EmptyBorder(5, 10, 3, 5));
-            mainPanel.southPanel.setBorder(new EmptyBorder(0, 10, 7, OS.isMacOSX() ? 7 : 5));
+            mainPanel.add(mainPanel.getSouthPanel(), BorderLayout.SOUTH);
+            mainPanel.getMainPanel().setBorder(new EmptyBorder(5, 10, 3, 5));
+            mainPanel.getSouthPanel().setBorder(new EmptyBorder(0, 10, 7, OS.isMacOSX() ? 7 : 5));
             mainPanel.getParent().validate();
         }
 
@@ -1752,7 +1734,7 @@ public class MainFrame extends JFrame implements CountListener, SnippetListener,
         autoHideCommentPanelMenuItem.setSelected(ApplicationSettings.getInstance().isAutoHideCommentEnabled());
         autoHideCommentPanelMenuItem.addActionListener(new ActionListener() {
             public void actionPerformed(ActionEvent e) {
-                checkAutoHideCommentPanel(Loader.DBMS_INSTANCE.getSnippet(state.getNameOfSelectedSnippet()), true);
+                checkAutoHideCommentPanel(state.getSelectedSnippet(), true);
             }
         });
 
@@ -1852,7 +1834,7 @@ public class MainFrame extends JFrame implements CountListener, SnippetListener,
         saveSnippetMenuItem.setAccelerator(KeyStroke.getKeyStroke(KeyEvent.VK_S, MENU_SHORTCUT_KEY_MASK));
         saveSnippetMenuItem.addActionListener(new ActionListener() {
             public void actionPerformed(ActionEvent e) {
-                mainPanel.saveButton.doClick();
+                mainPanel.getSaveButton().doClick();
             }
         });
 
@@ -1864,7 +1846,7 @@ public class MainFrame extends JFrame implements CountListener, SnippetListener,
         lockSnippetMenuItem.setAccelerator(KeyStroke.getKeyStroke(KeyEvent.VK_L, MENU_SHORTCUT_KEY_MASK | InputEvent.SHIFT_DOWN_MASK));
         lockSnippetMenuItem.addActionListener(new ActionListener() {
             public void actionPerformed(ActionEvent e) {
-                mainPanel.lockButton.doClick();
+                mainPanel.getLockButton().doClick();
             }
         });
         copyToClipboardMenuItem = new JMenuItem("Copy Code To Clipboard");
@@ -1912,7 +1894,7 @@ public class MainFrame extends JFrame implements CountListener, SnippetListener,
     }
 
     public void updateMenu(boolean enabled, boolean resetExportSubMenu) {
-        String name = state.getNameOfSelectedSnippet();
+        Snippet name = state.getSelectedSnippet();
 
         // file menu
         reloadSourceListMenuItem.setEnabled(enabled);
@@ -1945,7 +1927,9 @@ public class MainFrame extends JFrame implements CountListener, SnippetListener,
         saveSnippetMenuItem.setEnabled(state.isSnippetValidated() && !state.isSnippetLocked() && enabled);
         removeSnippetMenuItem.setEnabled(name != null && enabled);
         lockSnippetMenuItem.setEnabled((name != null) && state.isSnippetSaved() && state.isSnippetValidated() && enabled);
-        lockSnippetMenuItem.setText((state.isSnippetLocked() ? "Unlock" : "Lock"));
+        if(state.getCurrentSnippet() != null) {
+            lockSnippetMenuItem.setText((state.isSnippetLocked() ? "Unlock" : "Lock"));
+        }
         copyToClipboardMenuItem.setEnabled(name != null && enabled);
 
         // window menu
@@ -1961,7 +1945,7 @@ public class MainFrame extends JFrame implements CountListener, SnippetListener,
 
         exportSnippetsInCategorySubMenu.removeAll();
 
-        ArrayList<String> categories = Loader.DBMS_INSTANCE.getCategories();
+        List<String> categories = Loader.DBMS_INSTANCE.getCategories();
         for (int i = 0; i < categories.size(); i++) {
             JMenuItem categoryMenuItem = new JMenuItem(categories.get(i));
             categoryMenuItem.addActionListener(EXPORT_CATEGORY_ACTION);

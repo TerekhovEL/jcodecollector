@@ -19,12 +19,15 @@ import java.util.ArrayList;
 
 import jcodecollector.common.bean.Snippet;
 import jcodecollector.data.Controller;
+import jcodecollector.data.DBMS;
 import jcodecollector.listener.CategoryListener;
 import jcodecollector.listener.CountListener;
 import jcodecollector.listener.MenuListener;
 import jcodecollector.listener.SearchListener;
 import jcodecollector.listener.SnippetListener;
 import jcodecollector.listener.WindowListener;
+import jcodecollector.service.DefaultIdGenerator;
+import jcodecollector.service.IdGenerator;
 
 public class State implements SnippetListener, CategoryListener, CountListener, MenuListener, WindowListener, SearchListener {
 
@@ -68,7 +71,7 @@ public class State implements SnippetListener, CategoryListener, CountListener, 
 	private String nameOfSelectedCategory;
 
 	/** Lo snippet selezionato. */
-	private String nameOfSelectedSnippet;
+	private Snippet selectedSnippet;
 
 	/**
 	 * Se <code>true</code> lo snippet corrente e' stato salvato e non ha subito
@@ -79,14 +82,15 @@ public class State implements SnippetListener, CategoryListener, CountListener, 
 	/** Se <code>true</code> lo snippet corrente e' stato validato. */
 	private boolean snippetValidated;
 
-	/** Se <code>true</code> lo snippet corrente e' stato bloccato. */
-	private boolean snippetLocked;
-
 	/** Lo snippet precedente. */
 	private Snippet previousSnippet;
 
 	/** Se <code>true</code> indica che la ricerca e' attiva. */
 	private boolean searchActive;
+
+        private IdGenerator idGenerator = new DefaultIdGenerator();
+
+        private Snippet currentSnippet = new Snippet(idGenerator.getNextId());
 
 	/** Istanzia i vari array di listener. */
 	private State() {
@@ -103,7 +107,7 @@ public class State implements SnippetListener, CategoryListener, CountListener, 
 
 	/**
 	 * Restituisce l'unica instanza permessa di {@link State}
-	 * 
+	 *
 	 * @return l'unica instanza permessa di {@link State}
 	 */
 	public static State getInstance() {
@@ -245,13 +249,13 @@ public class State implements SnippetListener, CategoryListener, CountListener, 
 		}
 	}
 
-	public void updateSnippetStatus(boolean validated, boolean saved, boolean locked) {
+	public void updateSnippetStatus(Snippet snippet, boolean validated, boolean saved, boolean locked) {
 		this.snippetValidated = validated;
 		this.snippetSaved = saved;
-		this.snippetLocked = locked;
+		snippet.setLocked(locked);
 
 		for (SnippetListener listener : snippetListeners) {
-			listener.updateSnippetStatus(validated, saved, locked);
+			listener.updateSnippetStatus(snippet, validated, saved, locked);
 		}
 	}
 
@@ -277,7 +281,7 @@ public class State implements SnippetListener, CategoryListener, CountListener, 
 
 	/**
 	 * Imposta il nome della categoria selezionata.
-	 * 
+	 *
 	 * @param selectedCategory La categoria selezionata.
 	 */
 	public void setNameOfSelectedCategory(String selectedCategory) {
@@ -286,44 +290,47 @@ public class State implements SnippetListener, CategoryListener, CountListener, 
 
 	/**
 	 * Imposta il nome dello snippet selezionato.
-	 * 
+	 *
 	 * @param selectedSnippet Lo snippet selezionato.
 	 */
-	public void setNameOfSelectedSnippet(String selectedSnippet) {
-		this.nameOfSelectedSnippet = selectedSnippet;
+	public void setSelectedSnippet(Snippet selectedSnippet) {
+		this.selectedSnippet = selectedSnippet;
 	}
 
 	/**
 	 * Restuisce il nome della categoria selezionata.
-	 * 
+	 *
 	 * @return il nome della categoria selezionata
 	 */
 	public String getNameOfSelectedCategory() {
 		return this.nameOfSelectedCategory;
 	}
 
-	/**
-	 * Restuisce il nome dello snippet selezionato.
-	 * 
-	 * @return il nome dello snippet selezionato
-	 */
-	public String getNameOfSelectedSnippet() {
-		return this.nameOfSelectedSnippet;
-	}
+    public Snippet getSelectedSnippet() {
+        return selectedSnippet;
+    }
+
+    public void setCurrentSnippet(Snippet currentSnippet) {
+        this.currentSnippet = currentSnippet;
+    }
+
+    public Snippet getCurrentSnippet() {
+        return currentSnippet;
+    }
 
 	/**
 	 * Blocca o sblocca lo snippet corrente
-	 * 
+	 *
 	 * @param snippetLocked Se <code>true</code> lo snippet viene bloccato, con
 	 *        <code>false</code> viene sbloccato.
 	 */
 	public void setSnippetLocked(boolean snippetLocked) {
-		this.snippetLocked = snippetLocked;
+		this.currentSnippet.setLocked(snippetLocked);
 	}
 
 	/**
 	 * Indica se lo snippet corrente e' validato o meno.
-	 * 
+	 *
 	 * @return <code>true</code> se lo snippet e' stato validato,
 	 *         <code>false</code> altrimenti
 	 */
@@ -334,7 +341,7 @@ public class State implements SnippetListener, CategoryListener, CountListener, 
 	/**
 	 * Indica se lo snippet corrente e' stato salvato e se da allora non ha piu'
 	 * subito modifiche.
-	 * 
+	 *
 	 * @return <code>true</code> se lo snippet e' stato salvato.
 	 */
 	public boolean isSnippetSaved() {
@@ -343,17 +350,17 @@ public class State implements SnippetListener, CategoryListener, CountListener, 
 
 	/**
 	 * Indica se lo snippet e ' bloccato o meno.
-	 * 
+	 *
 	 * @return <code>true</code> se lo snippet e' bloccato, <code>false</code>
 	 *         altrimenti
 	 */
 	public boolean isSnippetLocked() {
-		return snippetLocked;
+		return currentSnippet.isLocked();
 	}
 
 	/**
 	 * Imposta lo snippet precedentemente selezionato.
-	 * 
+	 *
 	 * @param previousSnippet Lo snippet precedentemente selezionato.
 	 */
 	public void setPreviousSnippet(Snippet previousSnippet) {
@@ -362,7 +369,7 @@ public class State implements SnippetListener, CategoryListener, CountListener, 
 
 	/**
 	 * Restituisce lo snippet precedentemente selezionato.
-	 * 
+	 *
 	 * @return lo snippet precedentemente selezionato
 	 */
 	public Snippet getPreviousSnippet() {
@@ -380,7 +387,7 @@ public class State implements SnippetListener, CategoryListener, CountListener, 
 
 	/**
 	 * Indica se la ricerca e' attiva.
-	 * 
+	 *
 	 * @return <code>true</code> se la ricerca attiva, <code>false</code>
 	 *         altrimenti
 	 */

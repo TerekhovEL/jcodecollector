@@ -20,13 +20,14 @@ import java.awt.Point;
 import java.io.File;
 
 import javax.swing.filechooser.FileSystemView;
+import jcodecollector.common.bean.Snippet;
 
 import jcodecollector.util.OS;
 
 public class ApplicationSettings {
 
 	/** Lo snippet selezionato. */
-	private String selectedSnippets;
+	private Snippet selectedSnippet;
 
 	/** The dimension of main window. */
 	private Dimension windowSize = null;
@@ -86,7 +87,7 @@ public class ApplicationSettings {
 			PREFERENCES_PATH_DEFAULT = userDirectory + "/Library/Preferences/com.alessandro.jcodecollector";
 		} else {
 			DATABASE_PATH_DEFAULT = "jCodeCollector";
-			PREFERENCES_PATH_DEFAULT = "jCodeCollector\\settings.dat";
+			PREFERENCES_PATH_DEFAULT = "jCodeCollector"+File.separator+"settings.dat";
 		}
 
 		System.out.println("DEFAULT DATABASE PATH = " + DATABASE_PATH_DEFAULT);
@@ -95,23 +96,19 @@ public class ApplicationSettings {
 	}
 
 	private ApplicationSettings() {
-		selectedSnippets = null;
+		selectedSnippet = null;
 		windowSize = new Dimension(DEFAULT_WINDOW_SIZE);
 		windowLocation = new Point(DEFAULT_WINDOW_LOCATION);
 		sourceListWidth = new Integer(DEFAULT_SOURCE_LIST_WIDTH);
 		editorWidth = new Integer(DEFAULT_EDITOR_PANEL_WIDTH);
 	}
 
-	public String getSelectedSnippet() {
-		return selectedSnippets;
+	public Snippet getSelectedSnippet() {
+		return selectedSnippet;
 	}
 
-	public void setSelectedSnippet(String selectedSnippet) {
-		if (selectedSnippet != null && selectedSnippet.equals("null")) {
-			selectedSnippet = null;
-		}
-
-		this.selectedSnippets = selectedSnippet;
+	public void setSelectedSnippet(Snippet selectedSnippet) {
+		this.selectedSnippet = selectedSnippet;
 	}
 
 	public Dimension getWindowSize() {
@@ -228,7 +225,7 @@ public class ApplicationSettings {
 
 	/**
 	 * Returns the instance of the class.
-	 * 
+	 *
 	 * @return the instance of the class
 	 */
 	public static ApplicationSettings getInstance() {

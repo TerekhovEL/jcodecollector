@@ -20,10 +20,12 @@ import java.io.FileOutputStream;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Iterator;
+import java.util.LinkedList;
 import java.util.List;
 import jcodecollector.Loader;
 
 import jcodecollector.common.bean.Snippet;
+import jcodecollector.common.bean.Tag;
 
 import org.jdom.Document;
 import org.jdom.Element;
@@ -34,13 +36,13 @@ import org.jdom.output.XMLOutputter;
 
 /**
  * Classe che si occupa di leggere/scrivere file XML.
- * 
+ *
  * @author Alessandro Cocco me@alessandrococco.com
  */
 public class XMLManagerOldVersion {
 
     public static boolean createPackage(File file, String name) {
-        ArrayList<Snippet> array = Loader.DBMS_INSTANCE.getSnippets(name);
+        List<Snippet> array = Loader.DBMS_INSTANCE.getSnippets(name);
         Element root_xml = new Element("jcc-snippets-package");
         boolean success;
 
@@ -57,10 +59,10 @@ public class XMLManagerOldVersion {
             name_xml.setText(snippet.getName());
             element.addContent(name_xml);
 
-            String[] tags = snippet.getTags();
-            for (String tag : tags) {
+            List<Tag> tags = snippet.getTags();
+            for (Tag tag : tags) {
                 Element tag_xml = new Element("tag");
-                tag_xml.setText(tag);
+                tag_xml.setText(tag.getCategory());
                 element.addContent(tag_xml);
             }
 
@@ -121,9 +123,10 @@ public class XMLManagerOldVersion {
             String comment = element.getChildTextTrim("comment");
 
             List<Element> tags_xml = element.getChildren("tag");
-            String[] tags = new String[tags_xml.size()];
-            for (int i = 0; i < tags.length; i++) {
-                tags[i] = tags_xml.get(i).getTextTrim();
+            List<Tag> tags = new LinkedList<Tag>();
+            for (int i = 0; i < tags_xml.size(); i++) {
+                String tagName = tags_xml.get(i).getTextTrim();
+                tags.add(new Tag(category, tagName));
             }
 
             boolean locked = Boolean.parseBoolean(element.getChildTextTrim("locked"));
@@ -176,13 +179,14 @@ public class XMLManagerOldVersion {
                 String comment = snippet.getChildTextTrim("comment");
 
                 List<Element> tagsList = snippet.getChild("tags").getChildren("tag");
-                ArrayList<String> tags = new ArrayList<String>(tagsList.size());
+                List<Tag> tags = new ArrayList<Tag>(tagsList.size());
                 Iterator<Element> tagsIterator = tagsList.iterator();
                 while (tagsIterator.hasNext()) {
-                    tags.add(tagsIterator.next().getTextTrim());
+                    String tagName = tagsIterator.next().getTextTrim();
+                    tags.add(new Tag(category, tagName));
                 }
 
-                snippets.add(new Snippet(id, category, name, tags.toArray(new String[] {}), code, comment, syntax, locked));
+                snippets.add(new Snippet(id, category, name, tags, code, comment, syntax, locked));
             }
         }
 

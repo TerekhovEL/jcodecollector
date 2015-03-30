@@ -16,8 +16,8 @@
 package jcodecollector.listener;
 
 public interface WindowListener {
-	
+
     public void updateWindowStatus(boolean documentModified);
-    
+
     public void updateLineNumbers(boolean enabled);
 }

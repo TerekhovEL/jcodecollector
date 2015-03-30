@@ -33,7 +33,7 @@ import java.awt.Window;
  * Migliora l'integrazione dell'applicazione con Mac OS X usando le
  * funzionalita' offerte da Apple. Poiche' non sono portabili, questa classe
  * dovra' essere caricata dinamicamente solo su Mac OS X.
- * 
+ *
  * @author Alessandro Cocco
  */
 public class MacUtilities {

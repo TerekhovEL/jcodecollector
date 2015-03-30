@@ -15,40 +15,50 @@
  */
 package jcodecollector.common.bean;
 
+import java.io.Serializable;
 import java.util.Collection;
+import java.util.LinkedList;
+import java.util.List;
+import javax.persistence.Column;
+import javax.persistence.Embedded;
+import javax.persistence.Entity;
+import javax.persistence.GeneratedValue;
+import javax.persistence.GenerationType;
+import javax.persistence.Id;
+import javax.persistence.IdClass;
 
 /**
  * Questa classe incapsula il concetto di "stile". Ogni stile ha un nome ed una
  * serie di keywords, chiavi che saranno colorate all'interno dell'editor.
- * 
+ *
  * @author Alessandro Cocco me@alessandrococco.com
  */
-public class Syntax implements Comparable<Syntax> {
+@Entity
+public class Syntax implements Comparable<Syntax>, Serializable {
+    private static final long serialVersionUID = 1L;
     /** Il nome del linguaggio a cui appartiene questa sintassi. */
+    @Id
     private String name;
 
     /** Le parole chiave da colorare. */
-    private String[] keywords;
+    @Embedded
+    private List<String> keywords;
 
-    public Syntax() {
-        this("", new String[] {});
+    protected Syntax() {
+        this("", new LinkedList<String>());
     }
 
     public Syntax(String name) {
-        this(name, new String[] {});
+        this(name, new LinkedList<String>());
     }
 
-    public Syntax(String name, String[] keywords) {
+    public Syntax(String name, List<String> keywords) {
         this.name = name;
-        this.keywords = keywords.clone();
+        this.keywords = new LinkedList<String>(keywords);
     }
 
-    public Syntax(String name, Collection<String> keywords) {
-        this(name, keywords.toArray(new String[] {}));
-    }
-
-    public String[] getKeywords() {
-        return keywords.clone();
+    public List<String> getKeywords() {
+        return keywords;
     }
 
     public String getKeywordsAsString() {
@@ -61,15 +71,15 @@ public class Syntax implements Comparable<Syntax> {
         return k;
     }
 
-    public void setKeywords(String[] keywords) {
-        this.keywords = keywords.clone();
+    public void setKeywords(List<String> keywords) {
+        this.keywords = new LinkedList<String>(keywords);
     }
 
     public String getName() {
         return name;
     }
 
-    public void setName(String name) {
+    protected void setName(String name) {
         this.name = name;
     }
 
@@ -92,6 +102,14 @@ public class Syntax implements Comparable<Syntax> {
         return true;
     }
 
+    @Override
+    public int hashCode() {
+        int hash = 3;
+        hash = 43 * hash + (this.name != null ? this.name.hashCode() : 0);
+        return hash;
+    }
+
+    @Override
     public int compareTo(Syntax o) {
         return name.compareToIgnoreCase(o.name);
     }

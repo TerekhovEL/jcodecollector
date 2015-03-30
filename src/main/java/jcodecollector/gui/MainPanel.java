@@ -32,6 +32,8 @@ import java.awt.event.KeyAdapter;
 import java.awt.event.KeyEvent;
 import java.util.ArrayList;
 import java.util.Collections;
+import java.util.LinkedList;
+import java.util.List;
 import java.util.StringTokenizer;
 import java.util.TreeMap;
 
@@ -55,6 +57,7 @@ import jcodecollector.Loader;
 
 import jcodecollector.State;
 import jcodecollector.common.bean.Snippet;
+import jcodecollector.common.bean.Tag;
 import jcodecollector.document.EditorValidator;
 import jcodecollector.document.LimitedPlainDocument;
 import jcodecollector.document.LimitedSyntaxDocument;
@@ -68,23 +71,23 @@ import org.fife.ui.rsyntaxtextarea.RSyntaxTextArea;
 import org.fife.ui.rsyntaxtextarea.SyntaxConstants;
 import org.fife.ui.rtextarea.RTextScrollPane;
 
-public class MyDialog extends JDialog implements SnippetListener, CategoryListener {
+public class MainPanel extends JDialog implements SnippetListener, CategoryListener {
 
     private static final long serialVersionUID = 4798877825989114217L;
 
-    JComboBox categories;
-    RSyntaxTextArea editor;
-    JTextArea commentTextField;
-    JTextField nameTextField;
-    JComboBox syntaxBox;
+    private JComboBox categories;
+    private RSyntaxTextArea editor;
+    private JTextArea commentTextField;
+    private JTextField nameTextField;
+    private JComboBox syntaxBox;
 
-    JTextField tagsTextField;
-    JButton saveButton;
-    JToggleButton lockButton;
+    private JTextField tagsTextField;
+    private JButton saveButton;
+    private JToggleButton lockButton;
 
-    RTextScrollPane scrollPanel;
+    private RTextScrollPane scrollPanel;
 
-    JSplitPane split;
+    private JSplitPane split;
 
     /** Il validatore dei componenti di testo. */
     private EditorValidator editorValidator;
@@ -93,10 +96,12 @@ public class MyDialog extends JDialog implements SnippetListener, CategoryListen
     private JTextComponent[] textComponents;
 
     private MainFrame mainframe;
-    JPanel southPanel;
-    JPanel mainPanel;
+    private JPanel southPanel;
+    private JPanel mainPanel;
 
-    public MyDialog(MainFrame mainframe) {
+    private final State state = State.getInstance();
+
+    public MainPanel(MainFrame mainframe) {
         super(mainframe);
         this.mainframe = mainframe;
 
@@ -126,6 +131,60 @@ public class MyDialog extends JDialog implements SnippetListener, CategoryListen
         }
 
         categoriesUpdated("");
+
+        nameTextField.addKeyListener(new KeyAdapter() {
+            @Override
+            public void keyReleased(KeyEvent e) {
+                MainPanel.this.state.getCurrentSnippet().setName(nameTextField.getText());
+            }
+        });
+        categories.addItemListener(new ItemListener() {
+            @Override
+            public void itemStateChanged(ItemEvent e) {
+                String selectedCategory = (String)categories.getSelectedItem();
+                MainPanel.this.state.getCurrentSnippet().setCategory(selectedCategory);
+            }
+        });
+        editor.addKeyListener(new KeyAdapter() {
+            @Override
+            public void keyReleased(KeyEvent e) {
+                MainPanel.this.state.getCurrentSnippet().setCode(editor.getText());
+            }
+        });
+        commentTextField.addKeyListener(new KeyAdapter() {
+            @Override
+            public void keyReleased(KeyEvent e) {
+                MainPanel.this.state.getCurrentSnippet().setComment(commentTextField.getText());
+            }
+        });
+        syntaxBox.addItemListener(new ItemListener() {
+
+            @Override
+            public void itemStateChanged(ItemEvent e) {
+                String selectedSyntax = (String) syntaxBox.getSelectedItem();
+                MainPanel.this.state.getCurrentSnippet().setSyntax(selectedSyntax);
+            }
+        });
+        lockButton.addActionListener(new ActionListener() {
+
+            @Override
+            public void actionPerformed(ActionEvent e) {
+                MainPanel.this.state.getCurrentSnippet().setLocked(lockButton.isSelected());
+            }
+        });
+        tagsTextField.addKeyListener(new KeyAdapter() {
+
+            @Override
+            public void keyReleased(KeyEvent e) {
+                StringTokenizer tokenizer = new StringTokenizer(tagsTextField.getText().trim(), ",");
+                String category = (String) categories.getSelectedItem();
+                List<Tag> tags = new LinkedList<Tag>();
+                for (int i = 0; i < tags.size(); i++) {
+                    String tagName = tokenizer.nextToken().trim();
+                    tags.add(new Tag(category, tagName));
+                }
+            }
+        });
     }
 
     /** {@link TreeMap} of syntaxes. */
@@ -171,11 +230,11 @@ public class MyDialog extends JDialog implements SnippetListener, CategoryListen
     }
 
     /** Rileva quando dal {@link JComboBox} viene scelta una nuova sintassi. */
-    private class MyItemListener implements ItemListener {
+    private class SyntaxItemListener implements ItemListener {
 
         boolean ignoreUpdate = false;
 
-        public MyItemListener() {
+        public SyntaxItemListener() {
             // TODO Auto-generated constructor stub
         }
 
@@ -212,7 +271,9 @@ public class MyDialog extends JDialog implements SnippetListener, CategoryListen
                 return;
             }
 
-            State.getInstance().updateSnippetStatus(true, false, false);
+            if(state.getCurrentSnippet() != null) {
+                State.getInstance().updateSnippetStatus(state.getCurrentSnippet(), true, false, false);
+            }
 
             // evita lo "sfarfallamento" dell'indicatore di
             // "documento modificato"
@@ -222,7 +283,7 @@ public class MyDialog extends JDialog implements SnippetListener, CategoryListen
         }
     };
 
-    MyItemListener itemListener = new MyItemListener();
+    SyntaxItemListener syntaxItemListener = new SyntaxItemListener();
 
     /**
      * Piccolo accorgimento per evitare di chiamare inutilmente
@@ -329,24 +390,24 @@ public class MyDialog extends JDialog implements SnippetListener, CategoryListen
         lockButton.addActionListener(new ActionListener() {
             public void actionPerformed(ActionEvent e) {
                 if (State.getInstance().isSnippetSaved()) {
-                    State.getInstance().updateSnippetStatus(true, true, lockButton.isSelected());
+                    State.getInstance().updateSnippetStatus(state.getCurrentSnippet(), true, true, lockButton.isSelected());
                 } else {
                     lockButton.setSelected(false);
-                    State.getInstance().updateSnippetStatus(State.getInstance().isSnippetValidated(), false, false);
+                    State.getInstance().updateSnippetStatus(state.getCurrentSnippet(), State.getInstance().isSnippetValidated(), false, false);
                 }
 
-                State.getInstance().updateSnippetStatus(true, true, lockButton.isSelected());
+                State.getInstance().updateSnippetStatus(state.getCurrentSnippet(), true, true, lockButton.isSelected());
                 State.getInstance().updateMenu(true, false);
             }
         });
 
         // registra l'azione di cambiamento dello sintassi
-        syntaxBox.addItemListener(itemListener);
+        syntaxBox.addItemListener(syntaxItemListener);
     }
 
     /**
      * Sets a default background color to all <code>component</code>'s children.
-     * 
+     *
      * @param component The root component.
      */
     private void setDefaultBackgroundTo(Component component) {
@@ -465,7 +526,7 @@ public class MyDialog extends JDialog implements SnippetListener, CategoryListen
     /**
      * Mostra nell'editor lo snippet indicato. Lo snippet non deve essere
      * <code>null</code>.
-     * 
+     *
      * @param snippet Lo snippet da mostrare.
      */
     public void setSnippet(Snippet snippet) {
@@ -585,9 +646,9 @@ public class MyDialog extends JDialog implements SnippetListener, CategoryListen
          * tratta della categoria cancellata */
         String workingCategory = "" + categories.getModel().getSelectedItem();
         if (workingCategory.equals(name)) {
-            // syntaxBox.removeItemListener(itemListener);
+            // syntaxBox.removeItemListener(syntaxItemListener);
             clear();
-            // syntaxBox.addItemListener(itemListener);
+            // syntaxBox.addItemListener(syntaxItemListener);
         }
     }
 
@@ -623,7 +684,7 @@ public class MyDialog extends JDialog implements SnippetListener, CategoryListen
 
     /** @see jcodecollector.listener.CategoryListener#categoriesUpdated(String) */
     public void categoriesUpdated(String selected) {
-        ArrayList<String> array = Loader.DBMS_INSTANCE.getCategories();
+        List<String> array = Loader.DBMS_INSTANCE.getCategories();
         Collections.sort(array);
 
         categories.removeAllItems();
@@ -637,30 +698,6 @@ public class MyDialog extends JDialog implements SnippetListener, CategoryListen
         } else {
             categories.setSelectedIndex(-1);
         }
-    }
-
-    /**
-     * Restituisce lo snippet contenuto nell'editor.
-     * 
-     * @return lo snippet contenuto nell'editor
-     */
-    public Snippet getSnippet() {
-        String name = nameTextField.getText().trim();
-        String category = ((String) categories.getEditor().getItem()).trim();
-        String code = editor.getText().trim();
-        String comment = commentTextField.getText().trim();
-        String syntax = (String) syntaxBox.getSelectedItem();
-        boolean locked = lockButton.isSelected();
-
-        StringTokenizer tokenizer = new StringTokenizer(tagsTextField.getText().trim(), ",");
-        String[] tags = new String[tokenizer.countTokens()];
-
-        for (int i = 0; i < tags.length; i++) {
-            tags[i] = tokenizer.nextToken().trim();
-        }
-
-        int id = Loader.DBMS_INSTANCE.getSnippetId(name);
-        return new Snippet(id, category, name, tags, code, comment, syntax, locked);
     }
 
     /** @see jcodecollector.listener.SnippetListener#snippetEdited(Snippet) */
@@ -692,16 +729,14 @@ public class MyDialog extends JDialog implements SnippetListener, CategoryListen
      * @see jcodecollector.listener.SnippetListener#updateSnippetStatus(boolean,
      *      boolean, boolean)
      */
-    public void updateSnippetStatus(boolean validated, boolean saved, boolean locked) {
+    public void updateSnippetStatus(Snippet snippet, boolean validated, boolean saved, boolean locked) {
         lockButton.setEnabled(saved && validated);
         saveButton.setEnabled(validated && !locked);
 
         // lock/unlock the snippet
         lock(lockButton.isSelected());
 
-        if (Loader.DBMS_INSTANCE.lockSnippet(nameTextField.getText().trim(), lockButton.isSelected())) {
-            // TODO cosa si fa qui? boh
-        }
+        Loader.DBMS_INSTANCE.lockSnippet(snippet, lockButton.isSelected());
     }
 
     public void syntaxRenamed(String newName, String category) {
@@ -710,15 +745,15 @@ public class MyDialog extends JDialog implements SnippetListener, CategoryListen
         }
 
         if (category.equals(categories.getSelectedItem())) {
-            itemListener.ignoreUpdate = true;
+            syntaxItemListener.ignoreUpdate = true;
             syntaxBox.setSelectedItem(newName);
-            itemListener.ignoreUpdate = false;
+            syntaxItemListener.ignoreUpdate = false;
         }
     }
 
     /**
      * Restuisce un riferimento al pannello scorrevole che contiene l'editor.
-     * 
+     *
      * @return un riferimento al pannello scorrevole che contiene l'editor
      */
     public RTextScrollPane getScrollPanel() {
@@ -727,6 +762,22 @@ public class MyDialog extends JDialog implements SnippetListener, CategoryListen
 
     public String[] getSyntaxes() {
         return new ArrayList<String>(syntaxMap.keySet()).toArray(new String[] {});
+    }
+
+    public JButton getSaveButton() {
+        return saveButton;
+    }
+
+    public JToggleButton getLockButton() {
+        return lockButton;
+    }
+
+    public JPanel getSouthPanel() {
+        return southPanel;
+    }
+
+    public JPanel getMainPanel() {
+        return mainPanel;
     }
 
 }
