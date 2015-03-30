@@ -723,14 +723,12 @@ public class MainPanel extends JDialog implements SnippetListener, CategoryListe
     }
 
     private void lock(boolean value) {
-        value = !value;
-
-        categories.setEnabled(value);
-        nameTextField.setEditable(value);
-        tagsTextField.setEnabled(value);
-        syntaxBox.setEnabled(value);
-        editor.setEditable(value);
-        commentTextField.setEnabled(value);
+        categories.setEnabled(!value);
+        nameTextField.setEditable(!value);
+        tagsTextField.setEnabled(!value);
+        syntaxBox.setEnabled(!value);
+        editor.setEditable(!value);
+        commentTextField.setEnabled(!value);
     }
 
     /**
