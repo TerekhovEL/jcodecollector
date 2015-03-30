@@ -16,16 +16,11 @@
 package jcodecollector.common.bean;
 
 import java.io.Serializable;
-import java.util.Collection;
 import java.util.LinkedList;
 import java.util.List;
-import javax.persistence.Column;
 import javax.persistence.Embedded;
 import javax.persistence.Entity;
-import javax.persistence.GeneratedValue;
-import javax.persistence.GenerationType;
 import javax.persistence.Id;
-import javax.persistence.IdClass;
 
 /**
  * Questa classe incapsula il concetto di "stile". Ogni stile ha un nome ed una

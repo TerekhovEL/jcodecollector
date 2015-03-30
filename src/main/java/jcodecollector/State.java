@@ -19,7 +19,6 @@ import java.util.ArrayList;
 
 import jcodecollector.common.bean.Snippet;
 import jcodecollector.data.Controller;
-import jcodecollector.data.DBMS;
 import jcodecollector.listener.CategoryListener;
 import jcodecollector.listener.CountListener;
 import jcodecollector.listener.MenuListener;

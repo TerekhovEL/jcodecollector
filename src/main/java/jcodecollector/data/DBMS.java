@@ -16,15 +16,8 @@ package jcodecollector.data;
  * limitations under the License.
  */
 
-import jcodecollector.exceptions.ConnectionException;
 import jcodecollector.exceptions.DirectoryCreationException;
 import java.io.File;
-import java.sql.CallableStatement;
-import java.sql.Connection;
-import java.sql.DriverManager;
-import java.sql.PreparedStatement;
-import java.sql.ResultSet;
-import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.HashSet;
