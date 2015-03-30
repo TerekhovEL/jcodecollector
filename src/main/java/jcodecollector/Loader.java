@@ -19,6 +19,7 @@ import jcodecollector.exceptions.SystemExitException;
 import javax.swing.JOptionPane;
 import javax.swing.SwingUtilities;
 import javax.swing.UIManager;
+import javax.swing.UnsupportedLookAndFeelException;
 import jcodecollector.exceptions.ConnectionException;
 
 import jcodecollector.data.DBMS;
@@ -53,8 +54,14 @@ public class Loader {
             } else if (OS.isLinux()) {
                 UIManager.setLookAndFeel(UIManager.getCrossPlatformLookAndFeelClassName());
             }
-        } catch (Exception e) {
-            System.err.println("error loading look and feel - using default.");
+        } catch (ClassNotFoundException ex) {
+            logger.warn("error loading look and feel - using default.", ex);
+        } catch (IllegalAccessException ex) {
+            logger.warn("error loading look and feel - using default.", ex);
+        } catch (InstantiationException ex) {
+            logger.warn("error loading look and feel - using default.", ex);
+        } catch (UnsupportedLookAndFeelException ex) {
+            logger.warn("error loading look and feel - using default.", ex);
         }
 
         // carica i settaggi dell'applicazione
