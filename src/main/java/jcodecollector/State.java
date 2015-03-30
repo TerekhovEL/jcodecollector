@@ -18,6 +18,7 @@ package jcodecollector;
 import java.util.ArrayList;
 
 import jcodecollector.common.bean.Snippet;
+import jcodecollector.common.bean.Syntax;
 import jcodecollector.data.Controller;
 import jcodecollector.listener.CategoryListener;
 import jcodecollector.listener.CountListener;
@@ -223,7 +224,7 @@ public class State implements SnippetListener, CategoryListener, CountListener, 
 
 	/** @see SnippetListener#syntaxRenamed(String, String) */
         @Override
-	public void syntaxRenamed(String newName, String category) {
+	public void syntaxRenamed(Syntax newName, String category) {
 		for (SnippetListener listener : snippetListeners) {
 			listener.syntaxRenamed(newName, category);
 		}

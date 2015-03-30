@@ -25,6 +25,7 @@ import java.util.List;
 import jcodecollector.Loader;
 
 import jcodecollector.common.bean.Snippet;
+import jcodecollector.common.bean.Syntax;
 import jcodecollector.common.bean.Tag;
 
 import org.jdom.Document;
@@ -67,7 +68,7 @@ public class XMLManagerOldVersion {
             }
 
             Element syntax_xml = new Element("syntax");
-            syntax_xml.setText(snippet.getSyntax());
+            syntax_xml.setText(snippet.getSyntax().getName());
             element.addContent(syntax_xml);
 
             Element code_xml = new Element("code");
@@ -131,7 +132,7 @@ public class XMLManagerOldVersion {
 
             boolean locked = Boolean.parseBoolean(element.getChildTextTrim("locked"));
 
-            Snippet snippet = new Snippet(-1, category, name, tags, code, comment, syntax, locked);
+            Snippet snippet = new Snippet(-1, category, name, tags, code, comment, new Syntax(syntax), locked);
             array.add(snippet);
         }
 
@@ -186,7 +187,7 @@ public class XMLManagerOldVersion {
                     tags.add(new Tag(category, tagName));
                 }
 
-                snippets.add(new Snippet(id, category, name, tags, code, comment, syntax, locked));
+                snippets.add(new Snippet(id, category, name, tags, code, comment, new Syntax(syntax), locked));
             }
         }
 

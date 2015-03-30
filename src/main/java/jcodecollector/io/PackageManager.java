@@ -25,6 +25,7 @@ import java.util.List;
 import jcodecollector.Loader;
 
 import jcodecollector.common.bean.Snippet;
+import jcodecollector.common.bean.Syntax;
 import jcodecollector.common.bean.Tag;
 import jcodecollector.util.GeneralInfo;
 
@@ -79,7 +80,7 @@ public class PackageManager {
             }
 
             Element syntax_xml = new Element("syntax");
-            syntax_xml.setText(snippet.getSyntax());
+            syntax_xml.setText(snippet.getSyntax().getName());
             element.addContent(syntax_xml);
 
             Element code_xml = new Element("code");
@@ -143,7 +144,7 @@ public class PackageManager {
             }
 
             // creo lo snippet
-            Snippet snippet = new Snippet(-1, category, name, tags, code, comment, syntax, false);
+            Snippet snippet = new Snippet(-1, category, name, tags, code, comment, new Syntax(syntax), false);
             array.add(snippet);
         }
 

@@ -38,17 +38,20 @@ import java.util.StringTokenizer;
 import java.util.TreeMap;
 
 import javax.swing.DefaultComboBoxModel;
+import javax.swing.DefaultListCellRenderer;
 import javax.swing.JButton;
 import javax.swing.JComboBox;
 import javax.swing.JComponent;
 import javax.swing.JDialog;
 import javax.swing.JLabel;
+import javax.swing.JList;
 import javax.swing.JPanel;
 import javax.swing.JScrollPane;
 import javax.swing.JSplitPane;
 import javax.swing.JTextArea;
 import javax.swing.JTextField;
 import javax.swing.JToggleButton;
+import javax.swing.ListCellRenderer;
 import javax.swing.ScrollPaneConstants;
 import javax.swing.border.CompoundBorder;
 import javax.swing.border.EmptyBorder;
@@ -57,6 +60,7 @@ import jcodecollector.Loader;
 
 import jcodecollector.State;
 import jcodecollector.common.bean.Snippet;
+import jcodecollector.common.bean.Syntax;
 import jcodecollector.common.bean.Tag;
 import jcodecollector.document.EditorValidator;
 import jcodecollector.document.LimitedPlainDocument;
@@ -75,11 +79,11 @@ public class MainPanel extends JDialog implements SnippetListener, CategoryListe
 
     private static final long serialVersionUID = 4798877825989114217L;
 
-    private JComboBox categories;
+    private JComboBox<String> categories;
     private RSyntaxTextArea editor;
     private JTextArea commentTextField;
     private JTextField nameTextField;
-    private JComboBox syntaxBox;
+    private JComboBox<Syntax> syntaxBox;
 
     private JTextField tagsTextField;
     private JButton saveButton;
@@ -161,8 +165,20 @@ public class MainPanel extends JDialog implements SnippetListener, CategoryListe
 
             @Override
             public void itemStateChanged(ItemEvent e) {
-                String selectedSyntax = (String) syntaxBox.getSelectedItem();
+                Syntax selectedSyntax = (Syntax) syntaxBox.getSelectedItem();
                 MainPanel.this.state.getCurrentSnippet().setSyntax(selectedSyntax);
+            }
+        });
+        /*
+        internal implementation notes:
+        - DefaultListCellRenderer isn't parametrizable
+        */
+        syntaxBox.setRenderer(new ListCellRenderer<Syntax>() {
+            private final ListCellRenderer listCellRenderer = new DefaultListCellRenderer();
+
+            @Override
+            public Component getListCellRendererComponent(JList<? extends Syntax> list, Syntax value, int index, boolean isSelected, boolean cellHasFocus) {
+                return listCellRenderer.getListCellRendererComponent(list, value.getName(), index, isSelected, cellHasFocus);
             }
         });
         lockButton.addActionListener(new ActionListener() {
@@ -188,44 +204,44 @@ public class MainPanel extends JDialog implements SnippetListener, CategoryListe
     }
 
     /** {@link TreeMap} of syntaxes. */
-    private final TreeMap<String, String> syntaxMap = new TreeMap<String, String>();
+    private final TreeMap<Syntax, String> syntaxMap = new TreeMap<Syntax, String>();
 
     /** Popola il {@link JComboBox} delle sintassi. */
     private void initSyntax() {
-        syntaxMap.put("", SyntaxConstants.SYNTAX_STYLE_NONE);
-        syntaxMap.put("Assembler (X86)", SyntaxConstants.SYNTAX_STYLE_ASSEMBLER_X86);
-        syntaxMap.put("AppleScript", SyntaxConstants.SYNTAX_STYLE_UNIX_SHELL);
-        syntaxMap.put("Unix Shell Script", SyntaxConstants.SYNTAX_STYLE_UNIX_SHELL);
-        syntaxMap.put("C", SyntaxConstants.SYNTAX_STYLE_C);
-        syntaxMap.put("C++", SyntaxConstants.SYNTAX_STYLE_CPLUSPLUS);
-        syntaxMap.put("C#", SyntaxConstants.SYNTAX_STYLE_CSHARP);
-        syntaxMap.put("CSS", SyntaxConstants.SYNTAX_STYLE_CSS);
-        syntaxMap.put("Delphi", SyntaxConstants.SYNTAX_STYLE_DELPHI);
-        syntaxMap.put("Lisp", SyntaxConstants.SYNTAX_STYLE_LISP);
-        syntaxMap.put("Makefile", SyntaxConstants.SYNTAX_STYLE_MAKEFILE);
-        syntaxMap.put("Perl", SyntaxConstants.SYNTAX_STYLE_PERL);
-        syntaxMap.put("PHP", SyntaxConstants.SYNTAX_STYLE_PHP);
-        syntaxMap.put("Python", SyntaxConstants.SYNTAX_STYLE_PYTHON);
-        syntaxMap.put("Properties File", SyntaxConstants.SYNTAX_STYLE_PROPERTIES_FILE);
-        syntaxMap.put("Groovy", SyntaxConstants.SYNTAX_STYLE_GROOVY);
-        syntaxMap.put("Java", SyntaxConstants.SYNTAX_STYLE_JAVA);
-        syntaxMap.put("JavaScript", SyntaxConstants.SYNTAX_STYLE_JAVASCRIPT);
-        syntaxMap.put("JSP", SyntaxConstants.SYNTAX_STYLE_JSP);
-        syntaxMap.put("Lua", SyntaxConstants.SYNTAX_STYLE_LUA);
-        syntaxMap.put("Objective C", SyntaxConstants.SYNTAX_STYLE_C);
-        syntaxMap.put("Ruby", SyntaxConstants.SYNTAX_STYLE_RUBY);
-        syntaxMap.put("SQL", SyntaxConstants.SYNTAX_STYLE_SQL);
-        syntaxMap.put("HTML", SyntaxConstants.SYNTAX_STYLE_HTML);
-        syntaxMap.put("Tcl", SyntaxConstants.SYNTAX_STYLE_TCL);
-        syntaxMap.put("Windows Batch", SyntaxConstants.SYNTAX_STYLE_WINDOWS_BATCH);
-        syntaxMap.put("XML", SyntaxConstants.SYNTAX_STYLE_XML);
+        syntaxMap.put(new Syntax(""), SyntaxConstants.SYNTAX_STYLE_NONE);
+        syntaxMap.put(new Syntax("Assembler (X86)"), SyntaxConstants.SYNTAX_STYLE_ASSEMBLER_X86);
+        syntaxMap.put(new Syntax("AppleScript"), SyntaxConstants.SYNTAX_STYLE_UNIX_SHELL);
+        syntaxMap.put(new Syntax("Unix Shell Script"), SyntaxConstants.SYNTAX_STYLE_UNIX_SHELL);
+        syntaxMap.put(new Syntax("C"), SyntaxConstants.SYNTAX_STYLE_C);
+        syntaxMap.put(new Syntax("C++"), SyntaxConstants.SYNTAX_STYLE_CPLUSPLUS);
+        syntaxMap.put(new Syntax("C#"), SyntaxConstants.SYNTAX_STYLE_CSHARP);
+        syntaxMap.put(new Syntax("CSS"), SyntaxConstants.SYNTAX_STYLE_CSS);
+        syntaxMap.put(new Syntax("Delphi"), SyntaxConstants.SYNTAX_STYLE_DELPHI);
+        syntaxMap.put(new Syntax("Lisp"), SyntaxConstants.SYNTAX_STYLE_LISP);
+        syntaxMap.put(new Syntax("Makefile"), SyntaxConstants.SYNTAX_STYLE_MAKEFILE);
+        syntaxMap.put(new Syntax("Perl"), SyntaxConstants.SYNTAX_STYLE_PERL);
+        syntaxMap.put(new Syntax("PHP"), SyntaxConstants.SYNTAX_STYLE_PHP);
+        syntaxMap.put(new Syntax("Python"), SyntaxConstants.SYNTAX_STYLE_PYTHON);
+        syntaxMap.put(new Syntax("Properties File"), SyntaxConstants.SYNTAX_STYLE_PROPERTIES_FILE);
+        syntaxMap.put(new Syntax("Groovy"), SyntaxConstants.SYNTAX_STYLE_GROOVY);
+        syntaxMap.put(new Syntax("Java"), SyntaxConstants.SYNTAX_STYLE_JAVA);
+        syntaxMap.put(new Syntax("JavaScript"), SyntaxConstants.SYNTAX_STYLE_JAVASCRIPT);
+        syntaxMap.put(new Syntax("JSP"), SyntaxConstants.SYNTAX_STYLE_JSP);
+        syntaxMap.put(new Syntax("Lua"), SyntaxConstants.SYNTAX_STYLE_LUA);
+        syntaxMap.put(new Syntax("Objective C"), SyntaxConstants.SYNTAX_STYLE_C);
+        syntaxMap.put(new Syntax("Ruby"), SyntaxConstants.SYNTAX_STYLE_RUBY);
+        syntaxMap.put(new Syntax("SQL"), SyntaxConstants.SYNTAX_STYLE_SQL);
+        syntaxMap.put(new Syntax("HTML"), SyntaxConstants.SYNTAX_STYLE_HTML);
+        syntaxMap.put(new Syntax("Tcl"), SyntaxConstants.SYNTAX_STYLE_TCL);
+        syntaxMap.put(new Syntax("Windows Batch"), SyntaxConstants.SYNTAX_STYLE_WINDOWS_BATCH);
+        syntaxMap.put(new Syntax("XML"), SyntaxConstants.SYNTAX_STYLE_XML);
         // syntaxMap.put("Fortran", SyntaxConstants.SYNTAX_STYLE_FORTRAN);
         // syntaxMap.put("Scala", SyntaxConstants.SYNTAX_STYLE_SCALA);
         // syntaxMap.put("SAS", SyntaxConstants.SYNTAX_STYLE_SAS);
         // syntaxMap.put("BBCode", SyntaxConstants.SYNTAX_STYLE_BBCODE);
 
-        for (String name : syntaxMap.keySet()) {
-            syntaxBox.addItem(name);
+        for (Syntax syntax : syntaxMap.keySet()) {
+            syntaxBox.addItem(syntax);
         }
     }
 
@@ -245,7 +261,8 @@ public class MainPanel extends JDialog implements SnippetListener, CategoryListe
             }
 
             // vedo che sintassi e' stata selezionata
-            String syntax = syntaxMap.get(e.getItem());
+            Syntax selectedSyntax = (Syntax) e.getItem();
+            String syntax = syntaxMap.get(selectedSyntax);
 
             /* salvo il contenuto dell'editor e la posizione del cursore: questo
              * perche' quando imposto un nuovo Document l'editor viene pulito e
@@ -293,7 +310,7 @@ public class MainPanel extends JDialog implements SnippetListener, CategoryListe
     private boolean selectionFromUser = true;
 
     private void initComponents() {
-        categories = new JComboBox();
+        categories = new JComboBox<String>();
         ((JTextField) categories.getEditor().getEditorComponent()).setDocument(new LimitedPlainDocument(ApplicationConstants.CATEGORY_LENGTH));
         categories.setEditable(true);
         categories.putClientProperty("JComboBox.isPopDown", Boolean.TRUE);
@@ -323,7 +340,7 @@ public class MainPanel extends JDialog implements SnippetListener, CategoryListe
 
         tagsTextField = new JTextField();
 
-        syntaxBox = new JComboBox();
+        syntaxBox = new JComboBox<Syntax>();
         ((JTextField) syntaxBox.getEditor().getEditorComponent()).setDocument(new LimitedPlainDocument(ApplicationConstants.SYNTAX_NAME_LENGTH));
         syntaxBox.setEditable(false);
 
@@ -497,10 +514,10 @@ public class MainPanel extends JDialog implements SnippetListener, CategoryListe
     private JPanel buildSouthPanel() {
         JPanel panel = new JPanel(new BorderLayout());
         panel.setOpaque(false);
-        JScrollPane scrollPanel = new JScrollPane(commentTextField, ScrollPaneConstants.VERTICAL_SCROLLBAR_ALWAYS, ScrollPaneConstants.HORIZONTAL_SCROLLBAR_NEVER);
+        JScrollPane southPanelScrollPanel = new JScrollPane(commentTextField, ScrollPaneConstants.VERTICAL_SCROLLBAR_ALWAYS, ScrollPaneConstants.HORIZONTAL_SCROLLBAR_NEVER);
         // scrollPanel.setBorder(new CompoundBorder(new EmptyBorder(0, 0, 0, 0),
         // new EtchedBorder()));
-        panel.add(scrollPanel, BorderLayout.CENTER);
+        panel.add(southPanelScrollPanel, BorderLayout.CENTER);
 
         // pannello per l'area di testo di commento
         JPanel commentPanel = new JPanel(new BorderLayout());
@@ -560,7 +577,7 @@ public class MainPanel extends JDialog implements SnippetListener, CategoryListe
             tagsTextField.setCaretPosition(0);
         }
 
-        s = snippet.getSyntax().trim();
+        Syntax syntax = snippet.getSyntax();
         selectionFromUser = false;
         if (s != null && s.length() > 0) {
             syntaxBox.setSelectedItem(s);
@@ -717,7 +734,7 @@ public class MainPanel extends JDialog implements SnippetListener, CategoryListe
 
         if (!items.contains(snippet.getCategory())) {
             items.add(snippet.getCategory());
-            categories.setModel(new DefaultComboBoxModel(items.toArray()));
+            categories.setModel(new DefaultComboBoxModel<String>(items.toArray(new String[items.size()])));
             categories.setSelectedItem(snippet.getCategory());
         }
     }
@@ -747,7 +764,7 @@ public class MainPanel extends JDialog implements SnippetListener, CategoryListe
     }
 
     @Override
-    public void syntaxRenamed(String newName, String category) {
+    public void syntaxRenamed(Syntax newName, String category) {
         if (!State.getInstance().isSnippetSaved()) {
             return;
         }
@@ -768,8 +785,8 @@ public class MainPanel extends JDialog implements SnippetListener, CategoryListe
         return scrollPanel;
     }
 
-    public String[] getSyntaxes() {
-        return new ArrayList<String>(syntaxMap.keySet()).toArray(new String[] {});
+    public List<Syntax> getSyntaxes() {
+        return new LinkedList<Syntax>(syntaxMap.keySet());
     }
 
     public JButton getSaveButton() {

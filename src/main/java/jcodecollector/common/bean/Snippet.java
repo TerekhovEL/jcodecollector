@@ -60,7 +60,7 @@ public class Snippet implements Serializable {
     private String comment;
 
     /** Lo stile da usare per colorare il codice. */
-    private String syntax;
+    private Syntax syntax;
 
     /** Stato dello snippet. */
     private boolean locked;
@@ -70,11 +70,11 @@ public class Snippet implements Serializable {
      * validi dai metodi setter.
      */
     protected Snippet() {
-        this(-1, "", "", new LinkedList<Tag>(), "", "", "", false);
+        this(-1, "", "", new LinkedList<Tag>(), "", "", new Syntax(""), false);
     }
 
     public Snippet(int id) {
-        this(id, "", "", new LinkedList<Tag>(), "", "", "", false);
+        this(id, "", "", new LinkedList<Tag>(), "", "", new Syntax(""), false);
     }
 
     /**
@@ -91,9 +91,9 @@ public class Snippet implements Serializable {
      *        <code>false</code> altrimenti.
      */
     public Snippet(int id, String category, String name, List<Tag> tags,
-            String code, String comment, String syntax, boolean locked) {
+            String code, String comment, Syntax syntax, boolean locked) {
         if (syntax == null) {
-            syntax = "";
+            syntax = new Syntax("");
         }
 
         this.category = category;
@@ -107,7 +107,7 @@ public class Snippet implements Serializable {
     }
 
     public Snippet(int id, String category, String name, List<Tag> tags, String code,
-            String comment, String syntax) {
+            String comment, Syntax syntax) {
         this(id, category, name, tags, code, comment, syntax, false);
     }
 
@@ -221,7 +221,7 @@ public class Snippet implements Serializable {
      * @return il nome dello stile di colorazione sintattica assegnato allo
      *         snippet.
      */
-    public String getSyntax() {
+    public Syntax getSyntax() {
         return this.syntax;
     }
 
@@ -231,7 +231,7 @@ public class Snippet implements Serializable {
      * @param syntax Il nuovo nome dello stile di colorazione sintattica dello
      *        snippet.
      */
-    public void setSyntax(String syntax) {
+    public void setSyntax(Syntax syntax) {
         this.syntax = syntax;
     }
 

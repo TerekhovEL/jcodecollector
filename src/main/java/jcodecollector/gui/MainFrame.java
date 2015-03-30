@@ -300,6 +300,19 @@ public class MainFrame extends JFrame implements CountListener, SnippetListener,
         }
     }
 
+    private final static class SyntaxMenuItem extends JMenuItem {
+        private final Syntax syntax;
+
+        SyntaxMenuItem(Syntax syntax) {
+            super(syntax.getName());
+            this.syntax = syntax;
+        }
+
+        public Syntax getSyntax() {
+            return syntax;
+        }
+    }
+
     private void initSourceList() {
         sourceList = new SourceList();
         // TODO non fare ricreare tutto ogni volta
@@ -324,13 +337,14 @@ public class MainFrame extends JFrame implements CountListener, SnippetListener,
 
                 JMenu syntaxItem = new JMenu(CATEGORY_POPUP_MANAGER_ACTION);
                 syntaxItem.setText("Set Syntax...");
-                for (String s : mainPanel.getSyntaxes()) {
-                    final JMenuItem item = new JMenuItem(s);
+                for (Syntax s : mainPanel.getSyntaxes()) {
+                    final SyntaxMenuItem item = new SyntaxMenuItem(s);
                     item.addActionListener(new ActionListener() {
                         @Override
                         public void actionPerformed(ActionEvent e) {
-                            controller.updateSyntax(item.getText(), CATEGORY_POPUP_MANAGER_ACTION.getText(), !state.isSnippetSaved() ? state.getSelectedSnippet() : null);
-                            state.syntaxRenamed(item.getText(), CATEGORY_POPUP_MANAGER_ACTION.getText());
+
+                            controller.updateSyntax(item.getSyntax(), CATEGORY_POPUP_MANAGER_ACTION.getText(), !state.isSnippetSaved() ? state.getSelectedSnippet() : null);
+                            state.syntaxRenamed(item.getSyntax(), CATEGORY_POPUP_MANAGER_ACTION.getText());
                         }
                     });
                     syntaxItem.add(item);
@@ -1185,17 +1199,17 @@ public class MainFrame extends JFrame implements CountListener, SnippetListener,
             }
 
             if (menuItemClicked.equals("Set Syntax...")) {
-                String[] syntaxes = mainPanel.getSyntaxes();
-                syntaxes[0] = "-- no syntax highlighting"; // workaround
-                String newSyntax = (String) JOptionPane.showInputDialog(MainFrame.this, "<html><b>Please choose a syntax for snippets in \"" + text + "\".</b><br>"
-                        + "<font size=-1>The new syntax will be set to all snippets in the category.</font></html>", "Set A Syntax For All Snippets...", JOptionPane.QUESTION_MESSAGE, null, syntaxes, syntaxes[0]);
+                List<Syntax> syntaxes = mainPanel.getSyntaxes();
+                syntaxes.add(0, new Syntax("-- no syntax highlighting")); // workaround
+                Syntax newSyntax = new Syntax((String) JOptionPane.showInputDialog(MainFrame.this, "<html><b>Please choose a syntax for snippets in \"" + text + "\".</b><br>"
+                        + "<font size=-1>The new syntax will be set to all snippets in the category.</font></html>", "Set A Syntax For All Snippets...", JOptionPane.QUESTION_MESSAGE, null, syntaxes.toArray(), syntaxes.get(0)));
 
                 if (newSyntax == null) {
                     return;
                 }
 
-                if (newSyntax.equalsIgnoreCase("-- no syntax highlighting")) {
-                    newSyntax = "";
+                if (newSyntax.getName().equalsIgnoreCase("-- no syntax highlighting")) {
+                    newSyntax = new Syntax("");
                 }
 
                 controller.updateSyntax(newSyntax, text, !state.isSnippetSaved() ? state.getSelectedSnippet() : null);
@@ -1603,7 +1617,7 @@ public class MainFrame extends JFrame implements CountListener, SnippetListener,
     }
 
     @Override
-    public void syntaxRenamed(String newName, String category) {
+    public void syntaxRenamed(Syntax newName, String category) {
     }
 
     /**

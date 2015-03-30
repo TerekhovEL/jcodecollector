@@ -23,6 +23,7 @@ import java.util.TreeSet;
 import jcodecollector.Loader;
 
 import jcodecollector.common.bean.Snippet;
+import jcodecollector.common.bean.Syntax;
 
 public class SearchResults {
 
@@ -150,7 +151,7 @@ public class SearchResults {
         data.clear();
     }
 
-    public void setSyntax(String newSyntax, String category, Snippet selected) {
+    public void setSyntax(Syntax newSyntax, String category, Snippet selected) {
         if (!data.containsKey(category)) {
             return;
         }

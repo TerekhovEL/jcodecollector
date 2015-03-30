@@ -22,6 +22,7 @@ import jcodecollector.Loader;
 
 import jcodecollector.State;
 import jcodecollector.common.bean.Snippet;
+import jcodecollector.common.bean.Syntax;
 
 public class Controller {
     private static final Controller controller = new Controller();
@@ -68,7 +69,7 @@ public class Controller {
         }
     }
 
-    public void updateSyntax(String newSyntax, String category, Snippet selectedSnippet) {
+    public void updateSyntax(Syntax newSyntax, String category, Snippet selectedSnippet) {
         if(State.getInstance().isSearchActive()) {
             searchManager.setSyntax(newSyntax, category, selectedSnippet);
         }else {

@@ -39,6 +39,7 @@ import javax.persistence.criteria.Root;
 
 import jcodecollector.common.bean.Snippet;
 import jcodecollector.common.bean.Snippet_;
+import jcodecollector.common.bean.Syntax;
 import jcodecollector.common.bean.Tag;
 import jcodecollector.common.bean.Tag_;
 import jcodecollector.data.settings.ApplicationSettings;
@@ -441,20 +442,18 @@ public class DBMS {
      * @param snippet Lo snippet da bloccare/sbloccare.
      * @param locked <code>true</code> per bloccare lo snippet,
      *        <code>false</code> per sbloccarlo.
-     * @return <code>true</code> se l'operazione viene eseguita correttamente,
-     *         <code>false</code> altrimenti
      */
     public void lockSnippet(Snippet snippet, boolean locked) {
         snippet.setLocked(true);
     }
 
-    public void setSyntaxToCategory(String syntax, String category, Snippet selectedSnippet) {
+    public void setSyntaxToCategory(Syntax syntax, String category, Snippet selectedSnippet) {
         Set<Snippet> snippets = new HashSet<Snippet>(getSnippetsNames(category));
         snippets.remove(selectedSnippet);
         setSyntaxToSnippets(syntax, snippets);
     }
 
-    public void setSyntaxToSnippets(String syntax, Set<Snippet> snippets) {
+    public void setSyntaxToSnippets(Syntax syntax, Set<Snippet> snippets) {
         for(Snippet snippet : snippets) {
             snippet.setSyntax(syntax);
         }

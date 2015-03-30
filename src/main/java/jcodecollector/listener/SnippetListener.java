@@ -16,6 +16,7 @@
 package jcodecollector.listener;
 
 import jcodecollector.common.bean.Snippet;
+import jcodecollector.common.bean.Syntax;
 
 /**
  * @author Alessandro Cocco
@@ -53,5 +54,5 @@ public interface SnippetListener {
      */
     public void updateSnippetStatus(Snippet snippet, boolean validated, boolean saved, boolean locked);
 
-    public void syntaxRenamed(String newName, String category);
+    public void syntaxRenamed(Syntax newName, String category);
 }
