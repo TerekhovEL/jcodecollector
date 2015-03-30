@@ -34,37 +34,37 @@ public class State implements SnippetListener, CategoryListener, CountListener, 
 	 * Gli oggetti che vogliono essere aggiornati su cio' che riguarda uno
 	 * snippet (ad esempio: quando viene salvato, ecc).
 	 */
-	private ArrayList<SnippetListener> snippetListeners;
+	private final ArrayList<SnippetListener> snippetListeners;
 
 	/**
 	 * Gli oggetti che vogliono essere aggiornati su cio' che riguarda una
 	 * categoria (ad esempio se viene rinominata).
 	 */
-	private ArrayList<CategoryListener> categoryListeners;
+	private final ArrayList<CategoryListener> categoryListeners;
 
 	/**
 	 * Gli oggetti che vogliono essere aggiornati quando il numero di categorie
 	 * e/o snippet cambia.
 	 */
-	private ArrayList<CountListener> countListeners;
+	private final ArrayList<CountListener> countListeners;
 
 	/**
 	 * Gli oggetti che vogliono essere aggiornati quando c'e' da modificare lo
 	 * stato degli elementi dei menu.
 	 */
-	private ArrayList<MenuListener> menuListeners;
+	private final ArrayList<MenuListener> menuListeners;
 
 	/**
 	 * Gli oggetti che vogliono essere aggiornati quando cambia lo stato della
 	 * finestra (ad esempio quando viene settato il flag 'document modified'.
 	 */
-	private ArrayList<WindowListener> windowListeners;
+	private final ArrayList<WindowListener> windowListeners;
 
 	/**
 	 * Gli oggetti che vogliono essere aggiornati quando viene effettuata una
 	 * ricerca.
 	 */
-	private ArrayList<SearchListener> searchListeners;
+	private final ArrayList<SearchListener> searchListeners;
 
 	/** La categoria selezionata. */
 	private String nameOfSelectedCategory;
@@ -87,7 +87,7 @@ public class State implements SnippetListener, CategoryListener, CountListener, 
 	/** Se <code>true</code> indica che la ricerca e' attiva. */
 	private boolean searchActive;
 
-        private IdGenerator idGenerator = new DefaultIdGenerator();
+        private final IdGenerator idGenerator = new DefaultIdGenerator();
 
         private Snippet currentSnippet = new Snippet(idGenerator.getNextId());
 
@@ -102,7 +102,7 @@ public class State implements SnippetListener, CategoryListener, CountListener, 
 	}
 
 	/** L'unica istanza permessa di questa classe. */
-	private static State state = new State();
+	private static final State state = new State();
 
 	/**
 	 * Restituisce l'unica instanza permessa di {@link State}

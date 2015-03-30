@@ -95,9 +95,9 @@ public class MainPanel extends JDialog implements SnippetListener, CategoryListe
     /** Array di supporto per i componenti di testo. */
     private JTextComponent[] textComponents;
 
-    private MainFrame mainframe;
-    private JPanel southPanel;
-    private JPanel mainPanel;
+    private final MainFrame mainframe;
+    private final JPanel southPanel;
+    private final JPanel mainPanel;
 
     private final State state = State.getInstance();
 
@@ -188,7 +188,7 @@ public class MainPanel extends JDialog implements SnippetListener, CategoryListe
     }
 
     /** {@link TreeMap} of syntaxes. */
-    private TreeMap<String, String> syntaxMap = new TreeMap<String, String>();
+    private final TreeMap<String, String> syntaxMap = new TreeMap<String, String>();
 
     /** Popola il {@link JComboBox} delle sintassi. */
     private void initSyntax() {

@@ -78,7 +78,7 @@ public class ApplicationSettings {
 	public static final String PREFERENCES_PATH_DEFAULT;
 
 	/** Private instance of the class. */
-	private static ApplicationSettings settings = new ApplicationSettings();
+	private static final ApplicationSettings settings = new ApplicationSettings();
 
 	static {
 		String userDirectory = FileSystemView.getFileSystemView().getDefaultDirectory().getAbsolutePath();

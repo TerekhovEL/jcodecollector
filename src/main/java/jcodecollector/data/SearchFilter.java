@@ -75,7 +75,7 @@ public class SearchFilter {
         return sum;
     }
 
-    private static SearchFilter filter = new SearchFilter();
+    private static final SearchFilter filter = new SearchFilter();
 
     public static SearchFilter getInstance() {
         return filter;

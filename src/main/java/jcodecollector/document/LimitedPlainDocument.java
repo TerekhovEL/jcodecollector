@@ -29,7 +29,7 @@ public class LimitedPlainDocument extends PlainDocument {
     private static final long serialVersionUID = 450773819997253578L;
 
     /** Numero massimo di caratteri inseribili nel documento. */
-    private int maxSize;
+    private final int maxSize;
 
     /**
      * Crea un <code>LimitedPlainDocument</code> che permette di inserire al

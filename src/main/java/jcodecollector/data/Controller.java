@@ -24,9 +24,9 @@ import jcodecollector.State;
 import jcodecollector.common.bean.Snippet;
 
 public class Controller {
-    private static Controller controller = new Controller();
-    private static SearchResults searchManager = SearchResults.getInstance();
-    private static SearchFilter filters = SearchFilter.getInstance();
+    private static final Controller controller = new Controller();
+    private static final SearchResults searchManager = SearchResults.getInstance();
+    private static final SearchFilter filters = SearchFilter.getInstance();
 
     private Controller() {
         // do nothing

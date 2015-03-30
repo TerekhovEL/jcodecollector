@@ -29,7 +29,7 @@ public class SearchResults {
     /** La mappa ordinata che contiene gli snippet suddivisi per categoria. */
     private TreeMap<String, TreeSet<Snippet>> data = null;
 
-    private static SearchResults searchResults = new SearchResults();
+    private static final SearchResults searchResults = new SearchResults();
 
     public static SearchResults getInstance() {
         return searchResults;
